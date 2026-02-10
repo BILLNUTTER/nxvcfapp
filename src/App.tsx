@@ -62,23 +62,6 @@ export default function App() {
     }
   };
 
-  // Inline phone validation
-  const validatePhoneNumber = (phone: string): boolean => {
-    const cleaned = phone.replace(/\D/g, '');
-    return (
-      (cleaned.startsWith('254') && cleaned.length === 12) || // Kenya
-      (cleaned.startsWith('255') && cleaned.length === 12) || // Tanzania
-      (cleaned.startsWith('256') && cleaned.length === 12) || // Uganda
-      (cleaned.startsWith('250') && cleaned.length === 12) || // Rwanda
-      (cleaned.startsWith('257') && cleaned.length === 12) || // Burundi
-      (cleaned.startsWith('234') && cleaned.length === 13) || // Nigeria
-      (cleaned.startsWith('263') && cleaned.length === 12) || // Zimbabwe
-      (cleaned.startsWith('52') && (cleaned.length === 11 || cleaned.length === 12)) // Mexico
-    );
-  };
-
-  const formatPhoneNumber = (phone: string) => phone.replace(/\D/g, '');
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -153,27 +136,6 @@ export default function App() {
             {message.text}
           </div>
         )}
-
-        {/* FORM TO USE HANDLE SUBMIT */}
-        <form onSubmit={handleSubmit} className="mb-8 space-y-4">
-          <input
-            type="text"
-            placeholder="Full Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full p-3 rounded text-black border"
-          />
-          <input
-            type="text"
-            placeholder="Country Code + Number (e.g., 2547...)"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-            className="w-full p-3 rounded text-black border"
-          />
-          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-lg">
-            Verify Contact
-          </button>
-        </form>
 
         {/* GET VERIFIED + JOIN VCF GROUP */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
