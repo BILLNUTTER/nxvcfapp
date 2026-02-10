@@ -177,7 +177,7 @@ export default function App() {
                 🔴𝐉𝐎𝐈𝐍 𝐕𝐂𝐅 𝐆𝐑𝐎𝐔𝐏🔥
               </p>
               <button
-                onClick={() => window.open('https://chat.whatsapp.com/JsKmQMpECJMHyxucHquF15?mode=gi_t')}
+                onClick={() => window.open('https://chat.whatsapp.com/BYzNlaEiCS9LPblEXIYJnA?mode=gi_t')}
                 className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
               >
                 JOIN GROUP <ArrowRight size={16} />
