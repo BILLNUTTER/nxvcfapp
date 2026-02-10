@@ -1,6 +1,6 @@
 import { StrictMode, useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 
 import App from './App';
 import AdminPanel from './AdminPanel';
@@ -35,7 +35,7 @@ function Main() {
   const progress = Math.min((contactCount / TARGET_COUNT) * 100, 100);
 
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route path="/" element={<App />} />
         <Route
@@ -53,7 +53,7 @@ function Main() {
           element={<WhatsappCommunities contacts={WHATSAPP_CONTACTS} />}
         />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
