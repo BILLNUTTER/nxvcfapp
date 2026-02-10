@@ -43,7 +43,7 @@ const services = [
   },
 ];
 
-const NUTTERX_WHATSAPP = '25475881613';
+const NUTTERX_WHATSAPP = '254713881613';
 
 export default function ProgressSection({
   contactCount,
@@ -251,3 +251,4 @@ export default function ProgressSection({
     </div>
   );
 }
+
