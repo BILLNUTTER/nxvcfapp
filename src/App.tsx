@@ -126,7 +126,7 @@ export default function App() {
 
         {/* HEADER */}
         <header>
-          <h1 className="text-4xl font-bold mb-2">🛑𝐕𝐂𝐅 𝐕𝐄𝐑𝐈𝐅𝐈𝐂𝐀𝐓𝐈𝐎𝐍 𝐒𝐘𝐒𝐓𝐄𝐌🛑</h1>
+          <h1 className="text-4xl font-bold mb-2">🛑𝐕𝐂𝐅 𝐕𝐄𝐑𝐈𝐅𝐈𝐂𝐀𝐓𝐈𝐎𝐍 𝐒𝐘𝐒𝐓𝐄𝐌</h1>
           <p className="text-gray-200">🟢 Central control panel for verification progress, services, and community access</p>
         </header>
 
@@ -144,7 +144,9 @@ export default function App() {
           <div className="bg-white text-gray-900 rounded-2xl p-6 shadow-lg">
             <h2 className="text-2xl font-bold mb-2 flex items-center gap-2"><BarChart3 /> Verification Progress</h2>
             <p className="text-gray-700 mb-2">
-              🟠Track your verification status.🟣 Ensure your contacts are included in the VCF file and improve business visibility.Increase your status viewers🔥
+              🟠 Track your verification status.
+              🟣 Ensure your contacts are included in the VCF file and improve business visibility.
+              ⚫ Increase your status viewers🔥
             </p>
             <div className="w-full bg-gray-300 rounded-full h-5 mb-4">
               <div className="bg-green-500 h-5 rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
