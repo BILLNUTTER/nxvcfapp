@@ -153,7 +153,7 @@ export default function App() {
     className="cursor-pointer bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl p-6 flex gap-5 items-start hover:bg-black/50 transition"
   >
     <img
-      src="/images/progress.jpg"
+      src="/images/nutterx.jpg"
       alt="View Progress"
       className="w-16 h-16 rounded-full object-cover border border-white/20"
     />
