@@ -1,257 +1,198 @@
-import express from "express";
-import cors from "cors";
-import { MongoClient, ObjectId } from "mongodb";
-import dotenv from "dotenv";
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { BarChart3, Users, ArrowRight, MessageCircle } from 'lucide-react';
 
-dotenv.config();
+const API_URL = 'https://nuttervcf-ccc911dbe67f.herokuapp.com';
+const TARGET_COUNT = 110;
 
-const app = express();
-const PORT = process.env.PORT || 5000;
-const MONGODB_URI = process.env.MONGODB_URI;
-const ADMIN_KEY = process.env.ADMIN_KEY;
-
-if (!MONGODB_URI) {
-  console.error("❌ MONGODB_URI is not defined");
-  process.exit(1);
+interface Contact {
+  name: string;
+  phone_number: string;
 }
 
-if (!ADMIN_KEY) {
-  console.error("❌ ADMIN_KEY is not defined");
-  process.exit(1);
+interface AdminMessage {
+  message: string;
+  created_at: string;
 }
 
-const SUPPORT_LINK = "https://whatsapp.com/channel/0029Vb6b864Id7nIEgOrMe24";
+export default function App() {
+  const [contactCount, setContactCount] = useState<number>(0);
+  const [name, setName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [registeredUser, setRegisteredUser] = useState<Contact | null>(null);
+  const [adminMessages, setAdminMessages] = useState<AdminMessage[]>([]);
 
-let db;
-let contactsCollection;
-let broadcastCollection;
+  const navigate = useNavigate();
+  const goTo = (path: string) => navigate(path);
 
-const client = new MongoClient(MONGODB_URI);
+  const progress = Math.min((contactCount / TARGET_COUNT) * 100, 100);
+  const isComplete = contactCount >= TARGET_COUNT;
 
-/* ================= DATABASE ================= */
-async function connectDB() {
-  try {
-    await client.connect();
-    db = client.db("nxvcfapp");
+  useEffect(() => {
+    fetchContactCount();
+    fetchAdminMessages();
 
-    contactsCollection = db.collection("contacts");
-    broadcastCollection = db.collection("broadcasts");
+    const countInterval = setInterval(fetchContactCount, 5000);
+    const adminInterval = setInterval(fetchAdminMessages, 10000);
 
-    await contactsCollection.createIndex({ phone_number: 1 }, { unique: true });
+    return () => {
+      clearInterval(countInterval);
+      clearInterval(adminInterval);
+    };
+  }, []);
 
-    console.log("✅ Connected to MongoDB");
-  } catch (error) {
-    console.error("❌ MongoDB connection error:", error);
-    process.exit(1);
-  }
-}
-
-/* ================= MIDDLEWARE ================= */
-app.use(cors());
-app.use(express.json());
-
-/* ================= HEALTH ================= */
-app.get("/health", (_, res) => {
-  res.json({ status: "OK", service: "NUTTERX VCF API" });
-});
-
-/* ================= CONTACTS ================= */
-
-/* COUNT */
-app.get("/api/contacts/count", async (_, res) => {
-  try {
-    const count = await contactsCollection.countDocuments();
-    res.json({ count });
-  } catch (err) {
-    res.status(500).json({ error: "Failed to fetch count" });
-  }
-});
-
-/* GET ALL */
-app.get("/api/contacts", async (_, res) => {
-  try {
-    const contacts = await contactsCollection
-      .find({})
-      .sort({ created_at: 1 })
-      .limit(250)
-      .toArray();
-    res.json({ contacts });
-  } catch (err) {
-    res.status(500).json({ error: "Failed to fetch contacts" });
-  }
-});
-
-/* ✅ DOWNLOAD VCF FILE */
-app.get("/api/contacts/download", async (_, res) => {
-  try {
-    const contacts = await contactsCollection.find({}).toArray();
-
-    if (!contacts.length) {
-      return res.status(404).json({ error: "No contacts available" });
+  const fetchContactCount = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/contacts/count`);
+      const data = await res.json();
+      setContactCount(data.count || 0);
+    } catch (err) {
+      console.error('Error fetching contact count:', err);
     }
+  };
 
-    let vcfContent = "";
-
-    contacts.forEach((contact) => {
-      vcfContent += `BEGIN:VCARD\n`;
-      vcfContent += `VERSION:3.0\n`;
-      vcfContent += `FN:${contact.name}\n`;
-      vcfContent += `TEL;TYPE=CELL:${contact.phone_number}\n`;
-      vcfContent += `END:VCARD\n\n`;
-    });
-
-    res.setHeader("Content-Type", "text/vcard; charset=utf-8");
-    res.setHeader("Content-Disposition", "attachment; filename=NUTTERX_Contacts.vcf");
-
-    res.send(vcfContent);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to generate VCF file" });
-  }
-});
-
-/* CREATE (REGISTER) */
-app.post("/api/contacts", async (req, res) => {
-  try {
-    const { name, phone_number } = req.body;
-    if (!name || !phone_number) return res.status(400).json({ error: "Name and phone number are required" });
-
-    const cleanedPhone = phone_number.replace(/\D/g, "");
-    if (cleanedPhone.length < 10 || cleanedPhone.length > 15)
-      return res.status(400).json({ error: "Invalid phone number (10–15 digits)" });
-
-    const count = await contactsCollection.countDocuments();
-    if (count >= 250) return res.status(403).json({ error: "Contact limit (250) reached" });
-
-    const newContact = { name, phone_number: cleanedPhone, link: SUPPORT_LINK, created_at: new Date() };
-
-    await contactsCollection.insertOne(newContact);
-    res.status(201).json({ message: "Contact saved successfully", contact: newContact });
-  } catch (err) {
-    if (err.code === 11000) return res.status(409).json({ error: "Phone number already registered" });
-    res.status(500).json({ error: "Failed to save contact" });
-  }
-});
-
-/* USER UPDATE */
-app.put("/api/contacts", async (req, res) => {
-  try {
-    const { old_phone_number, new_name, new_phone_number } = req.body;
-    if (!old_phone_number || (!new_name && !new_phone_number))
-      return res.status(400).json({ error: "Required data missing" });
-
-    const update = {};
-    if (new_name) update.name = new_name;
-    if (new_phone_number) {
-      const cleanedPhone = new_phone_number.replace(/\D/g, "");
-      if (cleanedPhone.length < 10 || cleanedPhone.length > 15)
-        return res.status(400).json({ error: "Invalid phone number" });
-      update.phone_number = cleanedPhone;
+  const fetchAdminMessages = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/broadcast/latest`);
+      const data = await res.json();
+      setAdminMessages(data.message ? [data.message] : []);
+    } catch (err) {
+      console.error('Error fetching admin messages:', err);
     }
+  };
 
-    const result = await contactsCollection.updateOne({ phone_number: old_phone_number }, { $set: update });
-    if (result.matchedCount === 0) return res.status(404).json({ error: "Contact not found" });
+  const handleDownload = () => {
+    window.open(`${API_URL}/api/contacts/download`, '_blank');
+  };
 
-    const updatedContact = await contactsCollection.findOne({ phone_number: update.phone_number || old_phone_number });
-    res.json({ message: "Contact updated successfully", contact: updatedContact });
-  } catch (err) {
-    if (err.code === 11000) return res.status(409).json({ error: "Phone number already registered" });
-    res.status(500).json({ error: "Failed to update contact" });
-  }
-});
+  return (
+    <div className="min-h-screen flex bg-gradient-to-br from-purple-900 via-pink-800 to-orange-900 text-white">
 
-/* ================= ADMIN ================= */
+      {/* SIDEBAR */}
+      <aside className="w-64 bg-black/40 backdrop-blur-md p-6 hidden md:block">
+        <h2 className="text-2xl font-bold mb-8">NUTTERX</h2>
+        <nav className="space-y-4">
+          <button onClick={() => goTo('/progress')} className="flex items-center gap-3 w-full text-left px-4 py-3 rounded-lg hover:bg-white/10">
+            <BarChart3 size={20} /> Verification Progress
+          </button>
+          <button onClick={() => goTo('/communities')} className="flex items-center gap-3 w-full text-left px-4 py-3 rounded-lg hover:bg-white/10">
+            <Users size={20} /> WhatsApp Communities
+          </button>
+        </nav>
+      </aside>
 
-/* LOGIN */
-app.post("/api/admin/login", (req, res) => {
-  const { key } = req.body;
-  if (!key) return res.status(400).json({ error: "Admin key required" });
-  if (key !== ADMIN_KEY) return res.status(401).json({ error: "Invalid admin key" });
-  res.json({ success: true });
-});
+      {/* MAIN */}
+      <main className="flex-1 p-8 md:p-12 space-y-12">
 
-/* AUTH MIDDLEWARE */
-function adminAuth(req, res, next) {
-  const key = req.headers["x-admin-key"];
-  if (!key || key !== ADMIN_KEY) return res.status(401).json({ error: "Unauthorized" });
-  next();
+        {/* HEADER */}
+        <header>
+          <h1 className="text-4xl font-bold mb-2">🛑𝐕𝐂𝐅 𝐕𝐄𝐑𝐈𝐅𝐈𝐂𝐀𝐓𝐈𝐎𝐍 𝐒𝐘𝐒𝐓𝐄𝐌</h1>
+          <p className="text-gray-200">🟢 Central control panel for verification progress, services, and community access</p>
+        </header>
+
+        {/* VERIFICATION + VCF GROUP */}
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          {/* Verification Card */}
+          <div className="bg-white text-gray-900 rounded-2xl p-6 shadow-lg">
+            <h2 className="text-2xl font-bold mb-2 flex items-center gap-2"><BarChart3 /> Verification Progress</h2>
+
+            <div className="w-full bg-gray-300 rounded-full h-5 mb-4">
+              <div className="bg-green-500 h-5 rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
+            </div>
+
+            <p className="text-sm text-gray-700 mb-4">
+              {contactCount} / {TARGET_COUNT} contacts ({progress.toFixed(1)}%)
+            </p>
+
+            {!isComplete ? (
+              <button
+                onClick={() => goTo('/progress')}
+                className="flex items-center gap-2 px-5 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                ⚪ GET VERIFIED <ArrowRight size={18} />
+              </button>
+            ) : (
+              <button
+                onClick={handleDownload}
+                className="flex items-center gap-2 px-5 py-3 rounded-lg bg-green-600 hover:bg-green-700 text-white"
+              >
+                ⬇ DOWNLOAD VCF FILE <ArrowRight size={18} />
+              </button>
+            )}
+          </div>
+
+          {/* VCF Group Card */}
+          <div className="bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl p-6 flex gap-5 items-start hover:bg-black/50 transition">
+            <img
+              src="/images/nutterx.jpg"
+              alt="Bot Deployment & VCF Verification"
+              className="w-16 h-16 rounded-full object-cover border border-white/20"
+            />
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="text-lg font-semibold">Bot Deployment & VCF Verification</h3>
+                <span className="text-xs px-2 py-0.5 rounded-full bg-green-600/20 text-green-300">Group</span>
+              </div>
+              <p className="text-sm text-gray-300 mb-4">
+                🔴𝐉𝐎𝐈𝐍 𝐕𝐂𝐅 𝐆𝐑𝐎𝐔𝐏🔥
+              </p>
+              <button
+                onClick={() => window.open('https://chat.whatsapp.com/BYzNlaEiCS9LPblEXIYJnA?mode=gi_t')}
+                className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+              >
+                JOIN GROUP <ArrowRight size={16} />
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* ADMIN MESSAGES */}
+        {adminMessages.length > 0 && (
+          <section className="bg-white rounded-2xl p-6 shadow-lg mt-6">
+            <h2 className="text-2xl font-bold mb-2 flex items-center gap-2"><MessageCircle /> Admin Messages</h2>
+            <p className="text-gray-700 mb-4">Official messages, updates, or guidance from the Nutterx admin team.</p>
+            {adminMessages.map((msg, i) => (
+              <div key={i} className="border-l-4 border-blue-600 pl-3 mb-3">
+                <p className="text-gray-800">{msg.message}</p>
+                <p className="text-xs text-gray-500">{new Date(msg.created_at).toLocaleString()}</p>
+              </div>
+            ))}
+          </section>
+        )}
+
+        {/* ADDITIONAL SERVICE CARDS */}
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+          <div className="bg-white text-gray-900 rounded-2xl p-6 shadow-lg">
+            <h3 className="text-xl font-bold mb-2">How to Use the Web</h3>
+            <p className="text-gray-700">
+              Navigate the dashboard to check verification progress, join groups, and access all services easily.
+            </p>
+          </div>
+
+          <div className="bg-white text-gray-900 rounded-2xl p-6 shadow-lg">
+            <h3 className="text-xl font-bold mb-2">Benefits</h3>
+            <p className="text-gray-700">
+              The system improves visibility, organizes your contacts, and allows quick access to verified users and VCF files.
+            </p>
+          </div>
+
+          <div className="bg-white text-gray-900 rounded-2xl p-6 shadow-lg">
+            <h3 className="text-xl font-bold mb-2">More Services</h3>
+            <p className="text-gray-700">
+              Access bot deployment, direct support, and guidance for managing your VCF files efficiently.
+            </p>
+            <button onClick={() => goTo('/communities')} className="mt-4 flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+              Explore Communities <ArrowRight size={16} />
+            </button>
+          </div>
+        </section>
+
+        <footer className="pt-10 text-center text-sm text-gray-300">
+          © NUTTERX VCF SYSTEM — Main Dashboard
+        </footer>
+      </main>
+    </div>
+  );
 }
-
-/* ADMIN - CREATE BROADCAST */
-app.post("/api/admin/broadcast", adminAuth, async (req, res) => {
-  try {
-    const { message } = req.body;
-    if (!message) return res.status(400).json({ error: "Message required" });
-
-    const post = { message, created_at: new Date() };
-    await broadcastCollection.insertOne(post);
-    res.json({ success: true, post });
-  } catch (err) {
-    res.status(500).json({ error: "Failed to send broadcast" });
-  }
-});
-
-/* ADMIN - GET ALL CONTACTS */
-app.get("/api/admin/contacts", adminAuth, async (_, res) => {
-  try {
-    const contacts = await contactsCollection.find({}).sort({ created_at: 1 }).toArray();
-    res.json({ contacts });
-  } catch (err) {
-    res.status(500).json({ error: "Failed to fetch contacts" });
-  }
-});
-
-/* ADMIN - UPDATE CONTACT */
-app.put("/api/admin/contacts/:id", adminAuth, async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { name, phone_number } = req.body;
-    if (!name && !phone_number) return res.status(400).json({ error: "Nothing to update" });
-
-    const update = {};
-    if (name) update.name = name;
-    if (phone_number) {
-      const cleanedPhone = phone_number.replace(/\D/g, "");
-      if (cleanedPhone.length < 10 || cleanedPhone.length > 15)
-        return res.status(400).json({ error: "Invalid phone number" });
-      update.phone_number = cleanedPhone;
-    }
-
-    const result = await contactsCollection.updateOne({ _id: new ObjectId(id) }, { $set: update });
-    if (result.matchedCount === 0) return res.status(404).json({ error: "Contact not found" });
-
-    const updatedContact = await contactsCollection.findOne({ _id: new ObjectId(id) });
-    res.json({ message: "Contact updated successfully", contact: updatedContact });
-  } catch (err) {
-    if (err.code === 11000) return res.status(409).json({ error: "Phone number already registered" });
-    res.status(500).json({ error: "Failed to update contact" });
-  }
-});
-
-/* ADMIN - DELETE CONTACT */
-app.delete("/api/admin/contacts/:id", adminAuth, async (req, res) => {
-  try {
-    const { id } = req.params;
-    const result = await contactsCollection.deleteOne({ _id: new ObjectId(id) });
-    if (result.deletedCount === 0) return res.status(404).json({ error: "Contact not found" });
-    res.json({ message: "Contact deleted successfully" });
-  } catch (err) {
-    res.status(500).json({ error: "Failed to delete contact" });
-  }
-});
-
-/* GET LATEST BROADCAST (USERS) */
-app.get("/api/broadcast/latest", async (_, res) => {
-  try {
-    const post = await broadcastCollection.find({}).sort({ created_at: -1 }).limit(1).toArray();
-    res.json({ message: post[0] || null });
-  } catch (err) {
-    res.status(500).json({ error: "Failed to fetch broadcast" });
-  }
-});
-
-/* ================= START SERVER ================= */
-connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`🚀 NUTTERX VCF API running on port ${PORT}`);
-  });
-});
