@@ -62,47 +62,8 @@ export default function App() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (!name.trim() || !phoneNumber.trim()) {
-      setMessage({ type: 'error', text: 'Full name and phone number required' });
-      return;
-    }
-
-    if (!validatePhoneNumber(phoneNumber)) {
-      setMessage({ type: 'error', text: 'Invalid phone number. Must include country code and be from a supported country.' });
-      return;
-    }
-
-    const formattedPhone = formatPhoneNumber(phoneNumber);
-
-    try {
-      const res = await fetch(`${API_URL}/api/contacts`, {
-        method: registeredUser ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: name.trim(), phone_number: formattedPhone }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setMessage({ type: 'error', text: data.error || 'Submission failed' });
-      } else {
-        setRegisteredUser({ name: name.trim(), phone_number: formattedPhone });
-        setMessage({
-          type: 'success',
-          text: registeredUser ? 'Contact updated successfully' : 'Registration successful',
-        });
-        setName('');
-        setPhoneNumber('');
-        fetchContactCount();
-      }
-    } catch {
-      setMessage({ type: 'error', text: 'Server unavailable' });
-    }
-
-    setTimeout(() => setMessage(null), 5000);
+  const handleDownload = () => {
+    window.open(`${API_URL}/api/contacts/download`, '_blank');
   };
 
   return (
@@ -130,35 +91,36 @@ export default function App() {
           <p className="text-gray-200">🟢 Central control panel for verification progress, services, and community access</p>
         </header>
 
-        {/* MESSAGE ALERT */}
-        {message && (
-          <div className={`p-4 rounded ${message.type === 'error' ? 'bg-red-500' : 'bg-green-500'} text-white mb-4`}>
-            {message.text}
-          </div>
-        )}
-
-        {/* GET VERIFIED + JOIN VCF GROUP */}
+        {/* VERIFICATION + VCF GROUP */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
           {/* Verification Card */}
           <div className="bg-white text-gray-900 rounded-2xl p-6 shadow-lg">
             <h2 className="text-2xl font-bold mb-2 flex items-center gap-2"><BarChart3 /> Verification Progress</h2>
-            <p className="text-gray-700 mb-2">
-              🟠 Track your verification status.
-              🟣 Ensure your contacts are included in the VCF file and improve business visibility.
-              ⚫ Increase your status viewers🔥
-            </p>
+
             <div className="w-full bg-gray-300 rounded-full h-5 mb-4">
               <div className="bg-green-500 h-5 rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
             </div>
-            <p className="text-sm text-gray-700 mb-4">{contactCount} / {TARGET_COUNT} contacts ({progress.toFixed(1)}%)</p>
-            <button
-              onClick={() => goTo('/progress')}
-              disabled={isComplete}
-              className={`flex items-center gap-2 px-5 py-3 rounded-lg ${isComplete ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} text-white`}
-            >
-             ⚪ GET VERIFIED <ArrowRight size={18} />
-            </button>
+
+            <p className="text-sm text-gray-700 mb-4">
+              {contactCount} / {TARGET_COUNT} contacts ({progress.toFixed(1)}%)
+            </p>
+
+            {!isComplete ? (
+              <button
+                onClick={() => goTo('/progress')}
+                className="flex items-center gap-2 px-5 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                ⚪ GET VERIFIED <ArrowRight size={18} />
+              </button>
+            ) : (
+              <button
+                onClick={handleDownload}
+                className="flex items-center gap-2 px-5 py-3 rounded-lg bg-green-600 hover:bg-green-700 text-white"
+              >
+                ⬇ DOWNLOAD VCF FILE <ArrowRight size={18} />
+              </button>
+            )}
           </div>
 
           {/* VCF Group Card */}
@@ -227,7 +189,9 @@ export default function App() {
           </div>
         </section>
 
-        <footer className="pt-10 text-center text-sm text-gray-300">© NUTTERX VCF SYSTEM — Main Dashboard</footer>
+        <footer className="pt-10 text-center text-sm text-gray-300">
+          © NUTTERX VCF SYSTEM — Main Dashboard
+        </footer>
       </main>
     </div>
   );
