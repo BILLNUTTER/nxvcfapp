@@ -132,7 +132,7 @@ export default function App() {
     />
     <div className="flex-1">
       <div className="flex items-center gap-2 mb-1">
-        <h3 className="text-lg font-semibold">Bot Deployment & VCF Verification</h3>
+        <h3 className="text-lg font-semibold">𝐕𝐂𝐅 𝐕𝐄𝐑𝐈𝐅𝐈𝐂𝐀𝐓𝐈𝐎𝐍 𝐆𝐑𝐎𝐔𝐏</h3>
         <span className="text-xs px-2 py-0.5 rounded-full bg-green-600/20 text-green-300">Group</span>
       </div>
       <p className="text-sm text-gray-300 mb-4">
