@@ -210,24 +210,41 @@ export default function App() {
         </section>
 
         {/* ADMIN MESSAGES */}
-        {adminMessages.length > 0 && (
-          <section className="bg-white rounded-2xl p-6 shadow-lg">
-            <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
-              <MessageCircle /> Admin Messages
-            </h2>
-            <p className="text-gray-700 mb-4">
-              Official messages, updates, or guidance from the Nutterx admin team.
-            </p>
-            {adminMessages.map((msg, i) => (
-              <div key={i} className="border-l-4 border-blue-600 pl-3 mb-3">
-                <p className="text-gray-800">{msg.message}</p>
-                <p className="text-xs text-gray-500">
-                  {new Date(msg.created_at).toLocaleString()}
-                </p>
-              </div>
-            ))}
-          </section>
-        )}
+{adminMessages.length > 0 && (
+  <section className="mt-10 space-y-4">
+
+    {/* Section Header */}
+    <div className="text-white">
+      <h2 className="text-3xl font-bold flex items-center gap-2">
+        📢 𝐍𝐔𝐓𝐓𝐄𝐑𝐗 𝐎𝐅𝐅𝐈𝐂𝐈𝐀𝐋 𝐀𝐍𝐍𝐎𝐔𝐍𝐂𝐄𝐌𝐄𝐍𝐓𝐒💎
+      </h2>
+      <p className="text-gray-300 text-sm">
+        Stay updated with important information, system updates, and growth tips.
+      </p>
+    </div>
+
+    {/* Admin Card */}
+    <div className="bg-white rounded-2xl p-6 shadow-lg">
+      <h3 className="text-2xl font-bold mb-2 flex items-center gap-2 text-gray-900">
+        <MessageCircle /> Admin Messages
+      </h3>
+
+      <p className="text-gray-700 mb-4">
+        Official messages, updates, or guidance from the Nutterx admin team.
+      </p>
+
+      {adminMessages.map((msg, i) => (
+        <div key={i} className="border-l-4 border-blue-600 pl-3 mb-3">
+          <p className="text-gray-800">{msg.message}</p>
+          <p className="text-xs text-gray-500">
+            {new Date(msg.created_at).toLocaleString()}
+          </p>
+        </div>
+      ))}
+    </div>
+
+  </section>
+)}
 
         {/* ADDITIONAL SERVICE CARDS */}
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
