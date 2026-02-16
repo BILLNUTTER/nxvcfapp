@@ -246,35 +246,69 @@ export default function App() {
   </section>
 )}
 
-        {/* ADDITIONAL SERVICE CARDS */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white text-gray-900 rounded-2xl p-6 shadow-lg">
-            <h3 className="text-xl font-bold mb-2">How to Use the Web</h3>
-            <p className="text-gray-700">
-              Navigate the dashboard to check verification progress, join groups, and access all services easily.
-            </p>
-          </div>
+        {/* ADDITIONAL SERVICE SECTION */}
+<section className="mt-16 space-y-10">
 
-          <div className="bg-white text-gray-900 rounded-2xl p-6 shadow-lg">
-            <h3 className="text-xl font-bold mb-2">Benefits</h3>
-            <p className="text-gray-700">
-              The system improves visibility, organizes your contacts, and allows quick access to verified users and VCF files.
-            </p>
-          </div>
+  {/* Section Header */}
+  <div className="text-center max-w-3xl mx-auto">
+    <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">
+      Platform Services & Information
+    </h2>
+    <p className="text-gray-300 text-sm md:text-base">
+      Everything you need to understand how the system works, its benefits,
+      and the additional services available to support your growth.
+    </p>
+  </div>
 
-          <div className="bg-white text-gray-900 rounded-2xl p-6 shadow-lg">
-            <h3 className="text-xl font-bold mb-2">More Services</h3>
-            <p className="text-gray-700">
-              Access bot deployment, direct support, and guidance for managing your VCF files efficiently.
-            </p>
-            <button
-              onClick={() => goTo('/communities')}
-              className="mt-4 flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-            >
-              Explore Communities <ArrowRight size={16} />
-            </button>
-          </div>
-        </section>
+  {/* Cards Grid */}
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+    {/* Card 1 */}
+    <div className="bg-white text-gray-900 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition">
+      <h3 className="text-xl font-semibold mb-4 border-b pb-2">
+        How to Use the Web
+      </h3>
+      <p className="text-gray-700 leading-relaxed">
+        Navigate the dashboard to check verification progress, join groups,
+        download VCF files, and access all available services efficiently.
+      </p>
+    </div>
+
+    {/* Card 2 */}
+    <div className="bg-white text-gray-900 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition">
+      <h3 className="text-xl font-semibold mb-4 border-b pb-2">
+        Benefits
+      </h3>
+      <p className="text-gray-700 leading-relaxed">
+        The system increases visibility, expands your verified contact
+        network, improves status reach, and helps support business
+        growth through structured digital connections.
+      </p>
+    </div>
+
+    {/* Card 3 */}
+    <div className="bg-white text-gray-900 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition flex flex-col justify-between">
+      <div>
+        <h3 className="text-xl font-semibold mb-4 border-b pb-2">
+          More Services
+        </h3>
+        <p className="text-gray-700 leading-relaxed">
+          Access bot deployment, direct support, VCF management tools,
+          and verified community connections to expand your reach.
+        </p>
+      </div>
+
+      <button
+        onClick={() => goTo('/communities')}
+        className="mt-6 w-full flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition"
+      >
+        Explore Communities <ArrowRight size={16} />
+      </button>
+    </div>
+
+  </div>
+</section>
+
 
         <footer className="pt-10 text-center text-sm text-gray-300">
           © NUTTERX VCF SYSTEM — Main Dashboard
