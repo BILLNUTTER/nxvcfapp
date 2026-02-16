@@ -83,137 +83,154 @@ export default function App() {
       </aside>
 
       {/* MAIN */}
-      <main className="flex-1 p-8 md:p-12 space-y-12">
+      <main className="flex-1 px-6 md:px-12 py-10 space-y-16">
 
         {/* HEADER */}
-        <header>
-          <h1 className="text-4xl font-bold mb-2">🛑𝐕𝐂𝐅 𝐕𝐄𝐑𝐈𝐅𝐈𝐂𝐀𝐓𝐈𝐎𝐍 𝐒𝐘𝐒𝐓𝐄𝐌</h1>
-          <p className="text-gray-200">🟢 Central control panel for verification progress, services, and community access</p>
+        <header className="max-w-4xl">
+          <h1 className="text-4xl font-bold mb-3">
+            🛑𝐕𝐂𝐅 𝐕𝐄𝐑𝐈𝐅𝐈𝐂𝐀𝐓𝐈𝐎𝐍 𝐒𝐘𝐒𝐓𝐄𝐌
+          </h1>
+          <p className="text-gray-200 text-lg">
+            🟢 Central control panel for verification progress, services, and community access
+          </p>
         </header>
 
-{/* VERIFICATION + VCF GROUP */}
-<section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* MAIN DASHBOARD CARDS */}
+        <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-{/* Verification Card */}
-<div className="bg-white text-gray-900 rounded-2xl p-6 shadow-lg">
-  <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
-    <BarChart3 /> Verification Progress
-  </h2>
+          {/* Verification Card */}
+          <div className="bg-white text-gray-900 rounded-2xl p-8 shadow-xl flex flex-col justify-between">
+            <div>
+              <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                <BarChart3 /> Verification Progress
+              </h2>
 
-  <div className="w-full bg-gray-300 rounded-full h-5 mb-4">
-    <div
-      className="bg-green-500 h-5 rounded-full transition-all duration-500"
-      style={{ width: `${progress}%` }}
-    />
-  </div>
+              <div className="w-full bg-gray-300 rounded-full h-5 mb-4">
+                <div
+                  className="bg-green-500 h-5 rounded-full transition-all duration-500"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
 
-  <p className="text-sm text-gray-700 mb-3">
-    {contactCount} / {TARGET_COUNT} contacts ({progress.toFixed(1)}%)
-  </p>
+              <p className="text-sm text-gray-700 mb-3">
+                {contactCount} / {TARGET_COUNT} contacts ({progress.toFixed(1)}%)
+              </p>
 
-  {/* Added Info Section */}
-  <div className="bg-gray-100 rounded-lg p-4 mb-4 text-sm text-gray-700 space-y-2">
-    <p>
-      📈 This system helps increase your WhatsApp status viewers by expanding
-      your verified contact network.
-    </p>
-    <p>
-      🔥 More viewers means more visibility — helping you grow your business,
-      brand, or personal influence.
-    </p>
-    <p>
-      🌍 Connect with people across different countries and build a strong
-      international network through verified contacts.
-    </p>
-  </div>
+              <div className="bg-gray-100 rounded-lg p-4 mb-4 text-sm text-gray-700 space-y-2">
+                <p>
+                  📈 This system helps increase your WhatsApp status viewers by expanding
+                  your verified contact network.
+                </p>
+                <p>
+                  🔥 More viewers means more visibility — helping you grow your business,
+                  brand, or personal influence.
+                </p>
+                <p>
+                  🌍 Connect with people across different countries and build a strong
+                  international network through verified contacts.
+                </p>
+              </div>
+            </div>
 
-  {!isComplete ? (
-    <button
-      onClick={() => goTo('/progress')}
-      className="flex items-center gap-2 px-5 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white"
-    >
-      ⚪ GET VERIFIED <ArrowRight size={18} />
-    </button>
-  ) : (
-    <button
-      onClick={handleDownload}
-      className="flex items-center gap-2 px-5 py-3 rounded-lg bg-green-600 hover:bg-green-700 text-white"
-    >
-      ⬇ DOWNLOAD VCF FILE <ArrowRight size={18} />
-    </button>
-  )}
-</div>
+            {!isComplete ? (
+              <button
+                onClick={() => goTo('/progress')}
+                className="flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white w-full"
+              >
+                ⚪ GET VERIFIED <ArrowRight size={18} />
+              </button>
+            ) : (
+              <button
+                onClick={handleDownload}
+                className="flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-green-600 hover:bg-green-700 text-white w-full"
+              >
+                ⬇ DOWNLOAD VCF FILE <ArrowRight size={18} />
+              </button>
+            )}
+          </div>
 
+          {/* VCF Group Card */}
+          <div className="bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl p-8 hover:bg-black/50 transition flex flex-col justify-between">
+            <div className="flex gap-5">
+              <img
+                src="/images/nutterx.jpg"
+                alt="Bot Deployment & VCF Verification"
+                className="w-16 h-16 rounded-full object-cover border border-white/20"
+              />
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <h3 className="text-lg font-semibold">𝐕𝐂𝐅 𝐕𝐄𝐑𝐈𝐅𝐈𝐂𝐀𝐓𝐈𝐎𝐍 𝐆𝐑𝐎𝐔𝐏</h3>
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-green-600/20 text-green-300">
+                    Group
+                  </span>
+                </div>
+                <p className="text-sm text-gray-300 mb-6">
+                  🔴𝐉𝐎𝐈𝐍 𝐕𝐂𝐅 𝐆𝐑𝐎𝐔𝐏🔥
+                </p>
+              </div>
+            </div>
 
-  {/* VCF Group Card */}
-  <div className="bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl p-6 flex gap-5 items-start hover:bg-black/50 transition">
-    <img
-      src="/images/nutterx.jpg"
-      alt="Bot Deployment & VCF Verification"
-      className="w-16 h-16 rounded-full object-cover border border-white/20"
-    />
-    <div className="flex-1">
-      <div className="flex items-center gap-2 mb-1">
-        <h3 className="text-lg font-semibold">𝐕𝐂𝐅 𝐕𝐄𝐑𝐈𝐅𝐈𝐂𝐀𝐓𝐈𝐎𝐍 𝐆𝐑𝐎𝐔𝐏</h3>
-        <span className="text-xs px-2 py-0.5 rounded-full bg-green-600/20 text-green-300">Group</span>
-      </div>
-      <p className="text-sm text-gray-300 mb-4">
-        🔴𝐉𝐎𝐈𝐍 𝐕𝐂𝐅 𝐆𝐑𝐎𝐔𝐏🔥
-      </p>
-      <button
-        onClick={() => window.open('https://chat.whatsapp.com/BYzNlaEiCS9LPblEXIYJnA?mode=gi_t')}
-        className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
-      >
-        JOIN GROUP <ArrowRight size={16} />
-      </button>
-    </div>
-  </div>
+            <button
+              onClick={() => window.open('https://chat.whatsapp.com/BYzNlaEiCS9LPblEXIYJnA?mode=gi_t')}
+              className="inline-flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition w-full"
+            >
+              JOIN GROUP <ArrowRight size={16} />
+            </button>
+          </div>
 
-  {/* Progress Card */}
-  <div
-    onClick={() => goTo('/progress')}
-    className="cursor-pointer bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl p-6 flex gap-5 items-start hover:bg-black/50 transition"
-  >
-    <img
-      src="/images/progress.jpeg"
-      alt="View Progress"
-      className="w-16 h-16 rounded-full object-cover border border-white/20"
-    />
-    <div className="flex-1">
-      <div className="flex items-center gap-2 mb-1">
-        <h3 className="text-lg font-semibold">Check Verification Progress</h3>
-        <span className="text-xs px-2 py-0.5 rounded-full bg-blue-600/20 text-blue-300">Progress</span>
-      </div>
-      <p className="text-sm text-gray-300 mb-4">
-        📈 View your verification status and see how close you are to completing your contacts.
-      </p>
-      <button
-        onClick={() => goTo('/progress')}
-        className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-      >
-        SEE PROGRESS <ArrowRight size={16} />
-      </button>
-    </div>
-  </div>
-</section>
+          {/* Progress Card */}
+          <div
+            onClick={() => goTo('/progress')}
+            className="cursor-pointer bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl p-8 hover:bg-black/50 transition flex flex-col justify-between"
+          >
+            <div className="flex gap-5">
+              <img
+                src="/images/progress.jpeg"
+                alt="View Progress"
+                className="w-16 h-16 rounded-full object-cover border border-white/20"
+              />
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <h3 className="text-lg font-semibold">Check Verification Progress</h3>
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-blue-600/20 text-blue-300">
+                    Progress
+                  </span>
+                </div>
+                <p className="text-sm text-gray-300 mb-6">
+                  📈 View your verification status and see how close you are to completing your contacts.
+                </p>
+              </div>
+            </div>
 
+            <button className="inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition w-full">
+              SEE PROGRESS <ArrowRight size={16} />
+            </button>
+          </div>
+
+        </section>
 
         {/* ADMIN MESSAGES */}
         {adminMessages.length > 0 && (
-          <section className="bg-white rounded-2xl p-6 shadow-lg mt-6">
-            <h2 className="text-2xl font-bold mb-2 flex items-center gap-2"><MessageCircle /> Admin Messages</h2>
-            <p className="text-gray-700 mb-4">Official messages, updates, or guidance from the Nutterx admin team.</p>
+          <section className="bg-white rounded-2xl p-6 shadow-lg">
+            <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
+              <MessageCircle /> Admin Messages
+            </h2>
+            <p className="text-gray-700 mb-4">
+              Official messages, updates, or guidance from the Nutterx admin team.
+            </p>
             {adminMessages.map((msg, i) => (
               <div key={i} className="border-l-4 border-blue-600 pl-3 mb-3">
                 <p className="text-gray-800">{msg.message}</p>
-                <p className="text-xs text-gray-500">{new Date(msg.created_at).toLocaleString()}</p>
+                <p className="text-xs text-gray-500">
+                  {new Date(msg.created_at).toLocaleString()}
+                </p>
               </div>
             ))}
           </section>
         )}
 
         {/* ADDITIONAL SERVICE CARDS */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-white text-gray-900 rounded-2xl p-6 shadow-lg">
             <h3 className="text-xl font-bold mb-2">How to Use the Web</h3>
             <p className="text-gray-700">
@@ -233,7 +250,10 @@ export default function App() {
             <p className="text-gray-700">
               Access bot deployment, direct support, and guidance for managing your VCF files efficiently.
             </p>
-            <button onClick={() => goTo('/communities')} className="mt-4 flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+            <button
+              onClick={() => goTo('/communities')}
+              className="mt-4 flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+            >
               Explore Communities <ArrowRight size={16} />
             </button>
           </div>
@@ -242,6 +262,7 @@ export default function App() {
         <footer className="pt-10 text-center text-sm text-gray-300">
           © NUTTERX VCF SYSTEM — Main Dashboard
         </footer>
+
       </main>
     </div>
   );
