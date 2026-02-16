@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { BarChart3, Users, ArrowRight, MessageCircle } from 'lucide-react';
 
 const API_URL = 'https://nuttervcf-ccc911dbe67f.herokuapp.com';
-const TARGET_COUNT = 200;
+const TARGET_COUNT = 250;
 
 interface Contact {
   name: string;
@@ -94,34 +94,56 @@ export default function App() {
 {/* VERIFICATION + VCF GROUP */}
 <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-  {/* Verification Card */}
-  <div className="bg-white text-gray-900 rounded-2xl p-6 shadow-lg">
-    <h2 className="text-2xl font-bold mb-2 flex items-center gap-2"><BarChart3 /> Verification Progress</h2>
+{/* Verification Card */}
+<div className="bg-white text-gray-900 rounded-2xl p-6 shadow-lg">
+  <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
+    <BarChart3 /> Verification Progress
+  </h2>
 
-    <div className="w-full bg-gray-300 rounded-full h-5 mb-4">
-      <div className="bg-green-500 h-5 rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
-    </div>
-
-    <p className="text-sm text-gray-700 mb-4">
-      {contactCount} / {TARGET_COUNT} contacts ({progress.toFixed(1)}%)
-    </p>
-
-    {!isComplete ? (
-      <button
-        onClick={() => goTo('/progress')}
-        className="flex items-center gap-2 px-5 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white"
-      >
-        ⚪ GET VERIFIED <ArrowRight size={18} />
-      </button>
-    ) : (
-      <button
-        onClick={handleDownload}
-        className="flex items-center gap-2 px-5 py-3 rounded-lg bg-green-600 hover:bg-green-700 text-white"
-      >
-        ⬇ DOWNLOAD VCF FILE <ArrowRight size={18} />
-      </button>
-    )}
+  <div className="w-full bg-gray-300 rounded-full h-5 mb-4">
+    <div
+      className="bg-green-500 h-5 rounded-full transition-all duration-500"
+      style={{ width: `${progress}%` }}
+    />
   </div>
+
+  <p className="text-sm text-gray-700 mb-3">
+    {contactCount} / {TARGET_COUNT} contacts ({progress.toFixed(1)}%)
+  </p>
+
+  {/* Added Info Section */}
+  <div className="bg-gray-100 rounded-lg p-4 mb-4 text-sm text-gray-700 space-y-2">
+    <p>
+      📈 This system helps increase your WhatsApp status viewers by expanding
+      your verified contact network.
+    </p>
+    <p>
+      🔥 More viewers means more visibility — helping you grow your business,
+      brand, or personal influence.
+    </p>
+    <p>
+      🌍 Connect with people across different countries and build a strong
+      international network through verified contacts.
+    </p>
+  </div>
+
+  {!isComplete ? (
+    <button
+      onClick={() => goTo('/progress')}
+      className="flex items-center gap-2 px-5 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white"
+    >
+      ⚪ GET VERIFIED <ArrowRight size={18} />
+    </button>
+  ) : (
+    <button
+      onClick={handleDownload}
+      className="flex items-center gap-2 px-5 py-3 rounded-lg bg-green-600 hover:bg-green-700 text-white"
+    >
+      ⬇ DOWNLOAD VCF FILE <ArrowRight size={18} />
+    </button>
+  )}
+</div>
+
 
   {/* VCF Group Card */}
   <div className="bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl p-6 flex gap-5 items-start hover:bg-black/50 transition">
