@@ -150,25 +150,46 @@ export default function App() {
           </div>
 
           {/* VCF Group Card */}
-          <div className="bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl p-8 hover:bg-black/50 transition flex flex-col justify-between">
-            <div className="flex gap-5">
-              <img
-                src="/images/nutterx.jpg"
-                alt="Bot Deployment & VCF Verification"
-                className="w-16 h-16 rounded-full object-cover border border-white/20"
-              />
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
-                  <h3 className="text-lg font-semibold">𝐕𝐂𝐅 𝐕𝐄𝐑𝐈𝐅𝐈𝐂𝐀𝐓𝐈𝐎𝐍 𝐆𝐑𝐎𝐔𝐏</h3>
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-green-600/20 text-green-300">
-                    Group
-                  </span>
-                </div>
-                <p className="text-sm text-gray-300 mb-6">
-                  🔴𝐉𝐎𝐈𝐍 𝐕𝐂𝐅 𝐆𝐑𝐎𝐔𝐏🔥
-                </p>
-              </div>
-            </div>
+<div className="bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl p-8 hover:bg-black/50 transition flex flex-col justify-between">
+
+  <div className="flex gap-5">
+    <img
+      src="/images/nutterx.jpg"
+      alt="VCF Verification Group"
+      className="w-16 h-16 rounded-full object-cover border border-white/20"
+    />
+
+    <div className="flex-1">
+      <div className="flex items-center gap-2 mb-2">
+        <h3 className="text-lg font-semibold">
+          𝐕𝐂𝐅 𝐕𝐄𝐑𝐈𝐅𝐈𝐂𝐀𝐓𝐈𝐎𝐍 𝐆𝐑𝐎𝐔𝐏
+        </h3>
+        <span className="text-xs px-2 py-0.5 rounded-full bg-green-600/20 text-green-300">
+          Official Group
+        </span>
+      </div>
+
+      <p className="text-sm text-gray-300 mb-4 leading-relaxed">
+        ⚠️ Members are strongly advised to join the official VCF group for
+        faster updates, important guidelines, and verification announcements.
+      </p>
+
+      <p className="text-sm text-gray-400 leading-relaxed">
+        📥 The updated VCF files are always dropped inside the group.
+        Staying in the group ensures you don’t miss new releases,
+        instructions, or system updates.
+      </p>
+    </div>
+  </div>
+
+  <button
+    onClick={() => window.open('https://chat.whatsapp.com/BYzNlaEiCS9LPblEXIYJnA?mode=gi_t')}
+    className="mt-6 inline-flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition w-full font-semibold"
+  >
+    🔴𝐉𝐎𝐈𝐍 𝐕𝐂𝐅 𝐆𝐑𝐎𝐔𝐏 <ArrowRight size={16} />
+  </button>
+</div>
+
 
             <button
               onClick={() => window.open('https://chat.whatsapp.com/BYzNlaEiCS9LPblEXIYJnA?mode=gi_t')}
