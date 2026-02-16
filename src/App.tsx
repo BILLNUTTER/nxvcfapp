@@ -216,7 +216,7 @@ export default function App() {
     {/* Section Header */}
     <div className="text-white">
       <h2 className="text-3xl font-bold flex items-center gap-2">
-        📢 𝐍𝐔𝐓𝐓𝐄𝐑𝐗 𝐎𝐅𝐅𝐈𝐂𝐈𝐀𝐋 𝐀𝐍𝐍𝐎𝐔𝐍𝐂𝐄𝐌𝐄𝐍𝐓𝐒💎
+        📢 𝐒𝐓𝐀𝐘 𝐂𝐎𝐍𝐍𝐄𝐂𝐓𝐄𝐃💎
       </h2>
       <p className="text-gray-300 text-sm">
         Stay updated with important information, system updates, and growth tips.
