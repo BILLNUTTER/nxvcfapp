@@ -66,7 +66,8 @@ export default function ProgressSection({
       (cleaned.startsWith('255') && cleaned.length === 12) || // Tanzania
       (cleaned.startsWith('256') && cleaned.length === 12) || // Uganda
       (cleaned.startsWith('234') && cleaned.length === 13) || // Nigeria
-      (cleaned.startsWith('263') && cleaned.length === 12)    // Zimbabwe
+      (cleaned.startsWith('263') && cleaned.length === 12) || // Zimbabwe
+      (cleaned.startsWith('233') && cleaned.length === 12),  // 𝑮𝒉𝒂𝒏𝒂
     );
   };
 
@@ -251,4 +252,5 @@ export default function ProgressSection({
     </div>
   );
 }
+
 
