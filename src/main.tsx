@@ -11,7 +11,7 @@ import { WHATSAPP_CONTACTS } from './whatsappData';
 import './index.css';
 
 const TARGET_COUNT = 250;
-const API_URL = 'https://nuttervcf-ccc911dbe67f.herokuapp.com';
+const API_URL = 'https://nxvcfappp-e602fcd9f171.herokuapp.com';
 
 function Main() {
   const [contactCount, setContactCount] = useState<number>(0);
