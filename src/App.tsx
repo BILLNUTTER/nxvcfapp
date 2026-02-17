@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BarChart3, Users, ArrowRight, MessageCircle } from 'lucide-react';
 
-const API_URL = 'https://nuttervcf-ccc911dbe67f.herokuapp.com';
+const API_URL = 'https://nxvcfappp-e602fcd9f171.herokuapp.com';
 const TARGET_COUNT = 250;
 
 interface Contact {
