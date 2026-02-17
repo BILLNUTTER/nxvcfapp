@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Users, Send, MessageSquare, LogOut, Trash2, Edit } from "lucide-react";
 
-const API_URL = "https://nuttervcf-ccc911dbe67f.herokuapp.com";
+const API_URL = "https://nxvcfappp-e602fcd9f171.herokuapp.com/";
 
 interface Contact {
     _id: string;
@@ -364,3 +364,4 @@ export default function AdminPanel() {
         </div>
     );
 }
+
