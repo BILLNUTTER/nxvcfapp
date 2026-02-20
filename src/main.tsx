@@ -10,7 +10,7 @@ import { WHATSAPP_CONTACTS } from './whatsappData';
 
 import './index.css';
 
-const TARGET_COUNT = 250;
+const TARGET_COUNT = 300;
 const API_URL = 'https://nxvcfappp-e602fcd9f171.herokuapp.com';
 
 function Main() {
