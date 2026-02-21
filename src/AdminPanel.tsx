@@ -198,45 +198,56 @@ export default function AdminPanel() {
         }
     };
 
-    // ================= BLOCK NON-ADMIN =================
-    if (!isAdminRoute) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-black text-white">
-                <h1 className="text-xl font-bold">403 — Access Denied</h1>
+// ================= BLOCK NON-ADMIN =================
+if (!isAdminRoute) {
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white">
+            <div className="bg-gradient-to-tr from-red-600 via-purple-600 to-indigo-600 p-8 rounded-3xl shadow-2xl text-center max-w-md">
+                <h1 className="text-3xl font-extrabold mb-4 drop-shadow-lg">
+                    403 — Access Denied
+                </h1>
+                <p className="text-lg text-white/90">
+                    You don’t have permission to access this section.
+                </p>
             </div>
-        );
-    }
+        </div>
+    );
+}
 
-    if (!authorized) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-pink-700 to-orange-600">
-                <div className="bg-white p-6 rounded-2xl shadow-xl w-full max-w-sm">
-                    <h2 className="text-2xl font-bold text-center mb-4">
-                        Admin Login
-                    </h2>
-                    <input
-                        type="password"
-                        placeholder="Enter admin key"
-                        value={inputKey}
-                        onChange={(e) => setInputKey(e.target.value)}
-                        className="w-full border rounded-lg px-4 py-3 mb-3"
-                    />
-                    {error && (
-                        <p className="text-red-600 text-sm text-center mb-2">
-                            {error}
-                        </p>
-                    )}
-                    <button
-                        onClick={handleLogin}
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold"
-                    >
-                        Unlock Admin Panel
-                    </button>
-                </div>
+if (!authorized) {
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-pink-700 to-orange-600">
+            <div className="bg-white/90 backdrop-blur-md p-8 rounded-3xl shadow-2xl w-full max-w-sm">
+                <h2 className="text-3xl font-extrabold text-center mb-6 text-gradient bg-clip-text text-transparent 
+                               bg-gradient-to-r from-purple-700 via-pink-500 to-orange-400 drop-shadow-lg">
+                    Admin Login
+                </h2>
+
+                <input
+                    type="password"
+                    placeholder="Enter admin key"
+                    value={inputKey}
+                    onChange={(e) => setInputKey(e.target.value)}
+                    className="w-full border border-gray-300 rounded-xl px-4 py-3 mb-4 focus:ring-2 focus:ring-pink-500 focus:border-transparent transition"
+                />
+
+                {error && (
+                    <p className="text-red-600 text-sm text-center mb-4 font-medium">
+                        {error}
+                    </p>
+                )}
+
+                <button
+                    onClick={handleLogin}
+                    className="w-full bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 
+                               hover:scale-105 transform transition-all text-white py-3 rounded-xl font-bold shadow-lg"
+                >
+                    Unlock Admin Panel
+                </button>
             </div>
-        );
-    }
-
+        </div>
+    );
+}
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900 text-white p-6">
 
@@ -412,3 +423,4 @@ export default function AdminPanel() {
         </div>
     );
 }
+
