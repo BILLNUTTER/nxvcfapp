@@ -5,6 +5,12 @@ const API_URL = 'https://nxvcfappp-e602fcd9f171.herokuapp.com';
 const DEFAULT_SUPPORT_LINK = '';
 const GROUP_LINK = 'https://chat.whatsapp.com/BYzNlaEiCS9LPblEXIYJnA?mode=gi_t';
 
+/* ✅ HARD-CODED BLOCKED NUMBERS */
+const BLOCKED_NUMBERS = [
+  '254713380848',
+  '254712345678'
+];
+
 interface Contact {
   name: string;
   phone_number: string;
@@ -89,10 +95,20 @@ export default function ProgressSection({
       return;
     }
 
+    const formattedPhone = formatPhoneNumber(phoneNumber);
+
+    /* ✅ BLOCKED NUMBER CHECK */
+    if (BLOCKED_NUMBERS.includes(formattedPhone)) {
+      setMessage({
+        type: 'error',
+        text: 'This number is not allowed to register in the VCF system.',
+      });
+      return;
+    }
+
     setLoading(true);
     setMessage(null);
 
-    const formattedPhone = formatPhoneNumber(phoneNumber);
     const isUpdating = !!registeredUser;
 
     try {
@@ -123,7 +139,6 @@ export default function ProgressSection({
         setName('');
         setPhoneNumber('');
 
-        // 🔥 REDIRECT ONLY IF NEW REGISTRATION
         if (!isUpdating) {
           setTimeout(() => {
             window.open(GROUP_LINK, '_blank');
