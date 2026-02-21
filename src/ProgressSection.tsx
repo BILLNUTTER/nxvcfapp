@@ -3,6 +3,7 @@ import { ArrowRight } from 'lucide-react';
 
 const API_URL = 'https://nxvcfappp-e602fcd9f171.herokuapp.com';
 const DEFAULT_SUPPORT_LINK = '';
+const GROUP_LINK = 'https://chat.whatsapp.com/BYzNlaEiCS9LPblEXIYJnA?mode=gi_t';
 
 interface Contact {
   name: string;
@@ -44,7 +45,6 @@ const services = [
 ];
 
 const NUTTERX_WHATSAPP = '254713881613';
-const GROUP_LINK = 'https://chat.whatsapp.com/BYzNlaEiCS9LPblEXIYJnA?mode=gi_t';
 
 export default function ProgressSection({
   contactCount,
@@ -102,7 +102,7 @@ export default function ProgressSection({
         body: JSON.stringify({
           name: name.trim(),
           phone_number: formattedPhone,
-          link: DEFAULT_SUPPORT_LINK,
+          link: DEFAULT_SUPPORT_LINK
         }),
       });
 
@@ -115,13 +115,15 @@ export default function ProgressSection({
 
         setMessage({
           type: 'success',
-          text: isUpdating ? 'Contact updated successfully' : 'Registered successfully! Redirecting to group...',
+          text: isUpdating
+            ? 'Contact updated'
+            : 'Registered successfully! Redirecting to group...',
         });
 
         setName('');
         setPhoneNumber('');
 
-        // 🔥 Redirect to WhatsApp group only after NEW registration
+        // 🔥 REDIRECT ONLY IF NEW REGISTRATION
         if (!isUpdating) {
           setTimeout(() => {
             window.open(GROUP_LINK, '_blank');
@@ -164,12 +166,21 @@ export default function ProgressSection({
 
       <h1 className="text-4xl font-bold mb-6">NUTTERX Services & Verification</h1>
 
+      <p className="text-gray-200 mb-10 max-w-2xl">
+        Explore what NUTTERX offers as a software engineer. Get verified, track your VCF progress,
+        deploy bots, and get direct support.
+      </p>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
-        {/* LEFT SECTION */}
+        {/* LEFT: Registration + Progress */}
         <section className="bg-gray-900/80 backdrop-blur-md rounded-xl p-6 shadow-lg">
 
           <h2 className="text-xl font-semibold mb-3">Verification Progress</h2>
+
+          <p className="text-gray-300 text-sm mb-4">
+            Get verified to be included in the VCF system.
+          </p>
 
           <div className="mb-4">
             <p className="text-white text-sm mb-1">
@@ -183,11 +194,13 @@ export default function ProgressSection({
           <form onSubmit={handleSubmit} className="space-y-4">
 
             {message && (
-              <div className={`p-3 rounded ${
-                message.type === 'success'
-                  ? 'bg-green-100 text-green-800'
-                  : 'bg-red-100 text-red-800'
-              }`}>
+              <div
+                className={`p-3 rounded ${
+                  message.type === 'success'
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-red-100 text-red-800'
+                }`}
+              >
                 {message.text}
               </div>
             )}
@@ -229,6 +242,38 @@ export default function ProgressSection({
               </button>
             </div>
           </form>
+        </section>
+
+        {/* RIGHT: Services Cards */}
+        <section className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          {services.map((item) => (
+            <div
+              key={item.name}
+              className="bg-black/40 backdrop-blur-md rounded-2xl p-6 flex flex-col items-start hover:bg-black/50 transition cursor-pointer"
+              onClick={() => contactNutterx(item.name)}
+            >
+              <img
+                src={item.dp}
+                alt={item.name}
+                className="w-full h-40 rounded-xl object-cover mb-4 border border-white/20"
+              />
+
+              <div className="flex items-center gap-2 mb-2">
+                <h3 className="text-lg font-semibold">{item.name}</h3>
+                <span className="text-xs px-2 py-0.5 rounded-full bg-green-600/20 text-green-300">
+                  {item.type}
+                </span>
+              </div>
+
+              <p className="text-gray-300 mb-4">{item.description}</p>
+
+              <div className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
+                Contact <ArrowRight size={16} />
+              </div>
+            </div>
+          ))}
+
         </section>
 
       </div>
