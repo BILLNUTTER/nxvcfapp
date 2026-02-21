@@ -27,6 +27,9 @@ export default function AdminPanel() {
     const [editName, setEditName] = useState("");
     const [editPhone, setEditPhone] = useState("");
 
+    // ✅ NEW SEARCH STATE
+    const [searchTerm, setSearchTerm] = useState("");
+
     const isAdminRoute = new URLSearchParams(window.location.search).get("admin") === "true";
 
     useEffect(() => {
@@ -83,6 +86,12 @@ export default function AdminPanel() {
             setLoading(false);
         }
     };
+
+    // ✅ FILTERED CONTACTS (SEARCH LOGIC)
+    const filteredContacts = contacts.filter((c) =>
+        c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        c.phone_number.includes(searchTerm)
+    );
 
     // ================= BROADCAST =================
     const sendBroadcast = async () => {
@@ -180,7 +189,6 @@ export default function AdminPanel() {
         );
     }
 
-    // ================= LOGIN =================
     if (!authorized) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-pink-700 to-orange-600">
@@ -208,12 +216,13 @@ export default function AdminPanel() {
     // ================= DASHBOARD =================
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900 text-white p-6">
+
             {/* HEADER */}
             <div className="flex justify-between items-center mb-8">
                 <h1 className="text-3xl font-bold">NXADMIN DASHBOARD</h1>
                 <div className="flex gap-2">
                     <button
-                        onClick={() => fetchContacts()} // <-- wrap in arrow function
+                        onClick={() => fetchContacts()}
                         className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg"
                     >
                         Refresh Users
@@ -236,57 +245,16 @@ export default function AdminPanel() {
                 </div>
             </div>
 
-            {/* BROADCAST */}
+            {/* SEARCH SECTION */}
             <div className="bg-white text-gray-900 p-6 rounded-2xl shadow-lg mb-8">
-                <h2 className="text-xl font-bold mb-3 flex items-center gap-2">
-                    <MessageSquare /> Broadcast Message
-                </h2>
-                <textarea
-                    value={broadcast}
-                    onChange={(e) => setBroadcast(e.target.value)}
-                    className="w-full border rounded-lg p-3 mb-3"
-                    rows={3}
-                    placeholder="Message to display on user dashboards..."
+                <h2 className="text-xl font-bold mb-3">Search Users</h2>
+                <input
+                    type="text"
+                    placeholder="Search by name or phone number..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full border rounded-lg px-4 py-3"
                 />
-                <button
-                    onClick={sendBroadcast}
-                    disabled={sendingBroadcast}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg disabled:opacity-50"
-                >
-                    {sendingBroadcast ? "Sending..." : "Send Broadcast"}
-                </button>
-            </div>
-
-            {/* WHATSAPP */}
-            <div className="bg-white text-gray-900 p-6 rounded-2xl shadow-lg mb-8">
-                <h2 className="text-xl font-bold mb-3 flex items-center gap-2">
-                    <Send /> WhatsApp Message
-                </h2>
-                <select
-                    value={selectedPhone}
-                    onChange={(e) => setSelectedPhone(e.target.value)}
-                    className="w-full border rounded-lg p-3 mb-3"
-                >
-                    <option value="">Select user</option>
-                    {contacts.map((c) => (
-                        <option key={c._id} value={c.phone_number}>
-                            {c.name} — {c.phone_number}
-                        </option>
-                    ))}
-                </select>
-                <textarea
-                    value={waMessage}
-                    onChange={(e) => setWaMessage(e.target.value)}
-                    className="w-full border rounded-lg p-3 mb-3"
-                    rows={3}
-                    placeholder="WhatsApp message..."
-                />
-                <button
-                    onClick={openWhatsApp}
-                    className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg"
-                >
-                    Open WhatsApp
-                </button>
             </div>
 
             {/* USERS TABLE */}
@@ -294,8 +262,8 @@ export default function AdminPanel() {
                 <h2 className="text-xl font-bold mb-4">Registered Users</h2>
                 {loading ? (
                     <p>Loading...</p>
-                ) : contacts.length === 0 ? (
-                    <p>No users found.</p>
+                ) : filteredContacts.length === 0 ? (
+                    <p>No matching users found.</p>
                 ) : (
                     <table className="w-full text-sm">
                         <thead className="bg-gray-200">
@@ -306,7 +274,7 @@ export default function AdminPanel() {
                             </tr>
                         </thead>
                         <tbody>
-                            {contacts.map((c) => (
+                            {filteredContacts.map((c) => (
                                 <tr key={c._id} className="border-b">
                                     <td className="p-2">{c.name}</td>
                                     <td className="p-2">{c.phone_number}</td>
@@ -330,39 +298,6 @@ export default function AdminPanel() {
                     </table>
                 )}
             </div>
-
-            {/* EDIT MODAL */}
-            {editingUser && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white text-gray-900 p-6 rounded-xl w-full max-w-md shadow-lg">
-                        <h2 className="text-xl font-bold mb-4">Edit User</h2>
-                        <input
-                            type="text"
-                            value={editName}
-                            onChange={(e) => setEditName(e.target.value)}
-                            placeholder="Name"
-                            className="w-full border rounded-lg p-3 mb-3"
-                        />
-                        <input
-                            type="text"
-                            value={editPhone}
-                            onChange={(e) => setEditPhone(e.target.value)}
-                            placeholder="Phone number"
-                            className="w-full border rounded-lg p-3 mb-3"
-                        />
-                        <div className="flex justify-end gap-3">
-                            <button onClick={cancelEdit} className="px-4 py-2 bg-gray-400 rounded-lg">
-                                Cancel
-                            </button>
-                            <button onClick={saveEdit} className="px-4 py-2 bg-blue-600 text-white rounded-lg">
-                                Save
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
-
-
