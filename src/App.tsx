@@ -155,14 +155,14 @@ const startDrag = (e: MouseEvent | Touch) => {
   
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-purple-900 via-pink-800 to-orange-900 text-white">
-
+      
 {/* 🎵 FLOATING MUSIC CONTROL (Centered & Draggable) */}
 <div
   className="fixed z-50 bg-black/70 backdrop-blur-md px-5 py-4 rounded-2xl shadow-2xl flex flex-col items-start cursor-move select-none"
   style={{
-    top: window.innerHeight / 2 - 50, // roughly center vertically
-    left: window.innerWidth / 2,      // center horizontally
-    transform: 'translate(-50%, -50%)',
+    top: position.top,
+    left: position.left,
+    transform: 'translate(-50%, -50%)', // keeps it centered at the pointer
   }}
   onMouseDown={(e) => startDrag(e)}
   onTouchStart={(e) => startDrag(e.touches[0])}
