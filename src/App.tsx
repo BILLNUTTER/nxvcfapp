@@ -122,11 +122,51 @@ export default function App() {
     window.open(`${API_URL}/api/contacts/download`, '_blank');
   };
 
+const [position, setPosition] = useState<{ top: number; left: number }>({
+  top: window.innerHeight / 2 - 50,
+  left: window.innerWidth / 2,
+});
+const [dragging, setDragging] = useState(false);
+
+const startDrag = (e: MouseEvent | Touch) => {
+  e.preventDefault();
+  setDragging(true);
+
+  const startX = 'clientX' in e ? e.clientX : e.pageX;
+  const startY = 'clientY' in e ? e.clientY : e.pageY;
+
+  const handleMove = (moveEvent: MouseEvent | TouchEvent) => {
+    const clientX = 'touches' in moveEvent ? moveEvent.touches[0].clientX : moveEvent.clientX;
+    const clientY = 'touches' in moveEvent ? moveEvent.touches[0].clientY : moveEvent.clientY;
+
+    setPosition((prev) => ({
+      top: prev.top + (clientY - startY),
+      left: prev.left + (clientX - startX),
+    }));
+  };
+
+  const handleUp = () => setDragging(false);
+
+  window.addEventListener('mousemove', handleMove);
+  window.addEventListener('mouseup', handleUp, { once: true });
+  window.addEventListener('touchmove', handleMove);
+  window.addEventListener('touchend', handleUp, { once: true });
+};
+  
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-purple-900 via-pink-800 to-orange-900 text-white">
 
-{/* 🎵 FLOATING MUSIC CONTROL */}
-<div className="fixed top-6 right-6 z-50 bg-black/70 backdrop-blur-md px-5 py-4 rounded-2xl shadow-2xl flex flex-col items-start">
+{/* 🎵 FLOATING MUSIC CONTROL (Centered & Draggable) */}
+<div
+  className="fixed z-50 bg-black/70 backdrop-blur-md px-5 py-4 rounded-2xl shadow-2xl flex flex-col items-start cursor-move select-none"
+  style={{
+    top: window.innerHeight / 2 - 50, // roughly center vertically
+    left: window.innerWidth / 2,      // center horizontally
+    transform: 'translate(-50%, -50%)',
+  }}
+  onMouseDown={(e) => startDrag(e)}
+  onTouchStart={(e) => startDrag(e.touches[0])}
+>
   <p className="text-xs text-gray-300 mb-2">🎵 Background Music</p>
   
   <div className="flex gap-3">
@@ -151,6 +191,12 @@ export default function App() {
     Track {currentTrack + 1} / {PLAYLIST.length}
   </span>
 </div>
+
+
+
+
+
+      
 
       {/* SIDEBAR */}
       <aside className="w-64 bg-black/40 backdrop-blur-md p-6 hidden md:block">
