@@ -1,9 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BarChart3, Users, ArrowRight, MessageCircle } from 'lucide-react';
 
 const API_URL = 'https://nxvcfappp-e602fcd9f171.herokuapp.com';
 const TARGET_COUNT = 300;
+
+/* 🎵 MUSIC PLAYLIST */
+const PLAYLIST = [
+  '/music/song1.mp3',
+  '/music/song2.mp3',
+  '/music/song3.mp3',
+];
 
 interface Contact {
   name: string;
@@ -17,17 +24,65 @@ interface AdminMessage {
 
 export default function App() {
   const [contactCount, setContactCount] = useState<number>(0);
-  const [name, setName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-  const [registeredUser, setRegisteredUser] = useState<Contact | null>(null);
   const [adminMessages, setAdminMessages] = useState<AdminMessage[]>([]);
+
+  /* 🎵 MUSIC STATES */
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [currentTrack, setCurrentTrack] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const navigate = useNavigate();
   const goTo = (path: string) => navigate(path);
 
   const progress = Math.min((contactCount / TARGET_COUNT) * 100, 100);
   const isComplete = contactCount >= TARGET_COUNT;
+
+  /* ================= MUSIC SYSTEM ================= */
+  useEffect(() => {
+    const audio = new Audio(PLAYLIST[currentTrack]);
+    audio.volume = 0.7;
+    audioRef.current = audio;
+
+    audio.onended = () => {
+      const next = (currentTrack + 1) % PLAYLIST.length;
+      setCurrentTrack(next);
+    };
+
+    // Try autoplay
+    audio.play()
+      .then(() => setIsPlaying(true))
+      .catch(() => {
+        // If blocked, wait for first click
+        const startOnClick = () => {
+          audio.play();
+          setIsPlaying(true);
+          window.removeEventListener('click', startOnClick);
+        };
+        window.addEventListener('click', startOnClick);
+      });
+
+    return () => {
+      audio.pause();
+    };
+  }, [currentTrack]);
+
+  const toggleMusic = () => {
+    if (!audioRef.current) return;
+
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
+  const nextTrack = () => {
+    const next = (currentTrack + 1) % PLAYLIST.length;
+    setCurrentTrack(next);
+  };
+  /* ================================================= */
 
   useEffect(() => {
     fetchContactCount();
@@ -69,6 +124,25 @@ export default function App() {
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-purple-900 via-pink-800 to-orange-900 text-white">
 
+      {/* 🎵 FLOATING MUSIC CONTROL */}
+      <div className="fixed bottom-6 right-6 z-50 bg-black/70 backdrop-blur-md px-5 py-4 rounded-2xl shadow-2xl">
+        <p className="text-xs text-gray-300 mb-2">🎵 Background Music</p>
+        <div className="flex gap-3">
+          <button
+            onClick={toggleMusic}
+            className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-sm font-semibold"
+          >
+            {isPlaying ? 'Pause' : 'Play'}
+          </button>
+          <button
+            onClick={nextTrack}
+            className="bg-pink-600 hover:bg-pink-700 px-4 py-2 rounded-lg text-sm font-semibold"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+
       {/* SIDEBAR */}
       <aside className="w-64 bg-black/40 backdrop-blur-md p-6 hidden md:block">
         <h2 className="text-2xl font-bold mb-8">NUTTERX</h2>
@@ -94,6 +168,8 @@ export default function App() {
             🟢 Central control panel for verification progress, services, and community access
           </p>
         </header>
+
+        
 
         {/* MAIN DASHBOARD CARDS */}
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
