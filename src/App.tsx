@@ -274,11 +274,16 @@ export default function App() {
     </div>
   </div>
 
-  <button
-    onClick={() => window.open('https://chat.whatsapp.com/BYzNlaEiCS9LPblEXIYJnA?mode=gi_t') className="mt-6 inline-flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition w-full font-semibold"
-  >
-    🔴𝐉𝐎𝐈𝐍 𝐕𝐂𝐅 𝐆𝐑𝐎𝐔𝐏✅ <ArrowRight size={16} />
-  </button>
+<button
+  onClick={() =>
+    window.open(
+      'https://chat.whatsapp.com/BYzNlaEiCS9LPblEXIYJnA?mode=gi_t'
+    )
+  }
+  className="mt-6 inline-flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition w-full font-semibold"
+>
+  🔴𝐉𝐎𝐈𝐍 𝐕𝐂𝐅 𝐆𝐑𝐎𝐔𝐏✅ <ArrowRight size={16} />
+</button>
 </div>
 
           {/* Progress Card */}
