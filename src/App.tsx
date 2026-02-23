@@ -22,11 +22,10 @@ interface AdminMessage {
   created_at: string;
 }
 
+
 export default function App() {
   const [contactCount, setContactCount] = useState<number>(0);
   const [adminMessages, setAdminMessages] = useState<AdminMessage[]>([]);
-
-  /* 🎵 MUSIC STATES */
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [currentTrack, setCurrentTrack] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -38,61 +37,42 @@ export default function App() {
   const progress = Math.min((contactCount / TARGET_COUNT) * 100, 100);
   const isComplete = contactCount >= TARGET_COUNT;
 
-  /* ================= 🎵 FIXED MUSIC SYSTEM ================= */
-
-  // 1️⃣ Create audio once
+  /* 🎵 MUSIC SYSTEM */
   useEffect(() => {
     const audio = new Audio(PLAYLIST[0]);
     audio.volume = 0.7;
     audioRef.current = audio;
-
     audio.addEventListener('ended', () => {
       setCurrentTrack((prev) => (prev + 1) % PLAYLIST.length);
     });
-
     return () => {
       audio.pause();
       audioRef.current = null;
     };
   }, []);
 
-  // 2️⃣ Change track properly
   useEffect(() => {
     if (!audioRef.current) return;
-
     audioRef.current.src = PLAYLIST[currentTrack];
-
-    if (isPlaying) {
-      audioRef.current
-        .play()
-        .then(() => {})
-        .catch((err) => console.log('Playback blocked:', err));
-    }
+    if (isPlaying) audioRef.current.play().catch(() => {});
   }, [currentTrack]);
 
-  // 3️⃣ Start music on first touch/click
   useEffect(() => {
     const startMusic = async () => {
       if (!audioRef.current || started) return;
-
       try {
         await audioRef.current.play();
         setIsPlaying(true);
         setStarted(true);
         window.removeEventListener('click', startMusic);
-      } catch (err) {
-        console.log('Autoplay blocked:', err);
-      }
+      } catch {}
     };
-
     window.addEventListener('click', startMusic);
     return () => window.removeEventListener('click', startMusic);
   }, [started]);
 
-  // 4️⃣ Toggle play/pause manually
   const toggleMusic = async () => {
     if (!audioRef.current) return;
-
     if (isPlaying) {
       audioRef.current.pause();
       setIsPlaying(false);
@@ -100,27 +80,20 @@ export default function App() {
       try {
         await audioRef.current.play();
         setIsPlaying(true);
-      } catch (err) {
-        console.log('Playback error:', err);
-      }
+      } catch {}
     }
   };
 
-  // 5️⃣ Go to next track
   const nextTrack = () => {
     setCurrentTrack((prev) => (prev + 1) % PLAYLIST.length);
   };
-}
 
-  /* ========================================================== */
-
+  /* FETCH DATA */
   useEffect(() => {
     fetchContactCount();
     fetchAdminMessages();
-
     const countInterval = setInterval(fetchContactCount, 5000);
     const adminInterval = setInterval(fetchAdminMessages, 10000);
-
     return () => {
       clearInterval(countInterval);
       clearInterval(adminInterval);
@@ -133,7 +106,7 @@ export default function App() {
       const data = await res.json();
       setContactCount(data.count || 0);
     } catch (err) {
-      console.error('Error fetching contact count:', err);
+      console.error(err);
     }
   };
 
@@ -143,13 +116,15 @@ export default function App() {
       const data = await res.json();
       setAdminMessages(data.message ? [data.message] : []);
     } catch (err) {
-      console.error('Error fetching admin messages:', err);
+      console.error(err);
     }
   };
 
   const handleDownload = () => {
     window.open(`${API_URL}/api/contacts/download`, '_blank');
   };
+
+  /* ========================= JSX ========================= */  
 
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-purple-900 via-pink-800 to-orange-900 text-white">
@@ -300,8 +275,7 @@ export default function App() {
   </div>
 
   <button
-    onClick={() => window.open('https://chat.whatsapp.com/BYzNlaEiCS9LPblEXIYJnA?mode=gi_t')}
-    className="mt-6 inline-flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition w-full font-semibold"
+    onClick={() => window.open('https://chat.whatsapp.com/BYzNlaEiCS9LPblEXIYJnA?mode=gi_t') className="mt-6 inline-flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition w-full font-semibold"
   >
     🔴𝐉𝐎𝐈𝐍 𝐕𝐂𝐅 𝐆𝐑𝐎𝐔𝐏✅ <ArrowRight size={16} />
   </button>
@@ -446,4 +420,4 @@ export default function App() {
       </main>
     </div>
   );
-}
+      }
