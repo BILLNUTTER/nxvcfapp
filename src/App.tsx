@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BarChart3, Users, ArrowRight, MessageCircle } from 'lucide-react';
+import { BarChart3, Users } from 'lucide-react';
 
 const API_URL = 'https://nxvcfappp-e602fcd9f171.herokuapp.com';
 const TARGET_COUNT = 300;
@@ -30,6 +30,7 @@ export default function App() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [currentTrack, setCurrentTrack] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [started, setStarted] = useState(false);
 
   const navigate = useNavigate();
   const goTo = (path: string) => navigate(path);
@@ -37,52 +38,77 @@ export default function App() {
   const progress = Math.min((contactCount / TARGET_COUNT) * 100, 100);
   const isComplete = contactCount >= TARGET_COUNT;
 
-  /* ================= MUSIC SYSTEM ================= */
+  /* ================= 🎵 FIXED MUSIC SYSTEM ================= */
+
+  // Create audio ONCE
   useEffect(() => {
-    const audio = new Audio(PLAYLIST[currentTrack]);
+    const audio = new Audio(PLAYLIST[0]);
     audio.volume = 0.7;
     audioRef.current = audio;
 
-    audio.onended = () => {
-      const next = (currentTrack + 1) % PLAYLIST.length;
-      setCurrentTrack(next);
-    };
-
-    // Try autoplay
-    audio.play()
-      .then(() => setIsPlaying(true))
-      .catch(() => {
-        // If blocked, wait for first click
-        const startOnClick = () => {
-          audio.play();
-          setIsPlaying(true);
-          window.removeEventListener('click', startOnClick);
-        };
-        window.addEventListener('click', startOnClick);
-      });
+    audio.addEventListener('ended', () => {
+      setCurrentTrack((prev) => (prev + 1) % PLAYLIST.length);
+    });
 
     return () => {
       audio.pause();
     };
+  }, []);
+
+  // Change track properly
+  useEffect(() => {
+    if (!audioRef.current) return;
+
+    audioRef.current.src = PLAYLIST[currentTrack];
+
+    if (isPlaying) {
+      audioRef.current.play().catch(() => {});
+    }
   }, [currentTrack]);
 
-  const toggleMusic = () => {
+  // Start music on FIRST click anywhere
+  useEffect(() => {
+    const startMusic = async () => {
+      if (!audioRef.current || started) return;
+
+      try {
+        await audioRef.current.play();
+        setIsPlaying(true);
+        setStarted(true);
+        window.removeEventListener('click', startMusic);
+      } catch (err) {
+        console.log('Autoplay blocked:', err);
+      }
+    };
+
+    window.addEventListener('click', startMusic);
+
+    return () => {
+      window.removeEventListener('click', startMusic);
+    };
+  }, [started]);
+
+  const toggleMusic = async () => {
     if (!audioRef.current) return;
 
     if (isPlaying) {
       audioRef.current.pause();
       setIsPlaying(false);
     } else {
-      audioRef.current.play();
-      setIsPlaying(true);
+      try {
+        await audioRef.current.play();
+        setIsPlaying(true);
+      } catch (err) {
+        console.log('Playback error:', err);
+      }
     }
   };
 
   const nextTrack = () => {
-    const next = (currentTrack + 1) % PLAYLIST.length;
-    setCurrentTrack(next);
+    setCurrentTrack((prev) => (prev + 1) % PLAYLIST.length);
   };
-  /* ================================================= */
+
+  /* ========================================================== */
 
   useEffect(() => {
     fetchContactCount();
@@ -124,19 +150,32 @@ export default function App() {
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-purple-900 via-pink-800 to-orange-900 text-white">
 
-      {/* 🎵 FLOATING MUSIC CONTROL */}
-      <div className="fixed bottom-6 right-6 z-50 bg-black/70 backdrop-blur-md px-5 py-4 rounded-2xl shadow-2xl">
-        <p className="text-xs text-gray-300 mb-2">🎵 Background Music</p>
+      {/* 🎵 PREMIUM FLOATING MUSIC CONTROL */}
+      <div className="fixed bottom-6 right-6 z-50 bg-black/60 backdrop-blur-xl border border-white/10 px-6 py-5 rounded-3xl shadow-[0_15px_40px_rgba(0,0,0,0.6)]">
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-xs uppercase tracking-widest text-gray-300">
+            Background Music
+          </p>
+          <span className="text-[10px] text-purple-400">
+            Track {currentTrack + 1}/{PLAYLIST.length}
+          </span>
+        </div>
+
         <div className="flex gap-3">
           <button
             onClick={toggleMusic}
-            className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-sm font-semibold"
+            className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${
+              isPlaying
+                ? 'bg-gradient-to-r from-red-500 to-pink-600 hover:scale-105'
+                : 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:scale-105'
+            }`}
           >
             {isPlaying ? 'Pause' : 'Play'}
           </button>
+
           <button
             onClick={nextTrack}
-            className="bg-pink-600 hover:bg-pink-700 px-4 py-2 rounded-lg text-sm font-semibold"
+            className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-pink-500 to-orange-500 hover:scale-105 transition-all duration-300"
           >
             Next
           </button>
@@ -158,8 +197,6 @@ export default function App() {
 
       {/* MAIN */}
       <main className="flex-1 px-6 md:px-12 py-10 space-y-16">
-
-        {/* HEADER */}
         <header className="max-w-4xl">
           <h1 className="text-4xl font-bold mb-3">
             🛑𝐕𝐂𝐅 𝐕𝐄𝐑𝐈𝐅𝐈𝐂𝐀𝐓𝐈𝐎𝐍 𝐒𝐘𝐒𝐓𝐄𝐌
