@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import {import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BarChart3, Users } from 'lucide-react';
+import { BarChart3, Users, ArrowRight, MessageCircle } from 'lucide-react';
 
 const API_URL = 'https://nxvcfappp-e602fcd9f171.herokuapp.com';
 const TARGET_COUNT = 300;
@@ -22,14 +22,14 @@ interface AdminMessage {
   created_at: string;
 }
 
-
 export default function App() {
   const [contactCount, setContactCount] = useState<number>(0);
   const [adminMessages, setAdminMessages] = useState<AdminMessage[]>([]);
+
+  /* 🎵 MUSIC STATES */
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [currentTrack, setCurrentTrack] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [started, setStarted] = useState(false);
 
   const navigate = useNavigate();
   const goTo = (path: string) => navigate(path);
@@ -37,63 +37,60 @@ export default function App() {
   const progress = Math.min((contactCount / TARGET_COUNT) * 100, 100);
   const isComplete = contactCount >= TARGET_COUNT;
 
-  /* 🎵 MUSIC SYSTEM */
+  /* ================= MUSIC SYSTEM ================= */
   useEffect(() => {
-    const audio = new Audio(PLAYLIST[0]);
+    const audio = new Audio(PLAYLIST[currentTrack]);
     audio.volume = 0.7;
     audioRef.current = audio;
-    audio.addEventListener('ended', () => {
-      setCurrentTrack((prev) => (prev + 1) % PLAYLIST.length);
-    });
+
+    audio.onended = () => {
+      const next = (currentTrack + 1) % PLAYLIST.length;
+      setCurrentTrack(next);
+    };
+
+    // Try autoplay
+    audio.play()
+      .then(() => setIsPlaying(true))
+      .catch(() => {
+        // If blocked, wait for first click
+        const startOnClick = () => {
+          audio.play();
+          setIsPlaying(true);
+          window.removeEventListener('click', startOnClick);
+        };
+        window.addEventListener('click', startOnClick);
+      });
+
     return () => {
       audio.pause();
-      audioRef.current = null;
     };
-  }, []);
-
-  useEffect(() => {
-    if (!audioRef.current) return;
-    audioRef.current.src = PLAYLIST[currentTrack];
-    if (isPlaying) audioRef.current.play().catch(() => {});
   }, [currentTrack]);
 
-  useEffect(() => {
-    const startMusic = async () => {
-      if (!audioRef.current || started) return;
-      try {
-        await audioRef.current.play();
-        setIsPlaying(true);
-        setStarted(true);
-        window.removeEventListener('click', startMusic);
-      } catch {}
-    };
-    window.addEventListener('click', startMusic);
-    return () => window.removeEventListener('click', startMusic);
-  }, [started]);
-
-  const toggleMusic = async () => {
+  const toggleMusic = () => {
     if (!audioRef.current) return;
+
     if (isPlaying) {
       audioRef.current.pause();
       setIsPlaying(false);
     } else {
-      try {
-        await audioRef.current.play();
-        setIsPlaying(true);
-      } catch {}
+      audioRef.current.play();
+      setIsPlaying(true);
     }
   };
 
   const nextTrack = () => {
-    setCurrentTrack((prev) => (prev + 1) % PLAYLIST.length);
+    const next = (currentTrack + 1) % PLAYLIST.length;
+    setCurrentTrack(next);
   };
+  /* ================================================= */
 
-  /* FETCH DATA */
   useEffect(() => {
     fetchContactCount();
     fetchAdminMessages();
+
     const countInterval = setInterval(fetchContactCount, 5000);
     const adminInterval = setInterval(fetchAdminMessages, 10000);
+
     return () => {
       clearInterval(countInterval);
       clearInterval(adminInterval);
@@ -106,7 +103,7 @@ export default function App() {
       const data = await res.json();
       setContactCount(data.count || 0);
     } catch (err) {
-      console.error(err);
+      console.error('Error fetching contact count:', err);
     }
   };
 
@@ -116,7 +113,7 @@ export default function App() {
       const data = await res.json();
       setAdminMessages(data.message ? [data.message] : []);
     } catch (err) {
-      console.error(err);
+      console.error('Error fetching admin messages:', err);
     }
   };
 
@@ -124,37 +121,22 @@ export default function App() {
     window.open(`${API_URL}/api/contacts/download`, '_blank');
   };
 
-  /* ========================= JSX ========================= */  
-
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-purple-900 via-pink-800 to-orange-900 text-white">
 
-      {/* 🎵 PREMIUM FLOATING MUSIC CONTROL */}
-      <div className="fixed bottom-6 right-6 z-50 bg-black/60 backdrop-blur-xl border border-white/10 px-6 py-5 rounded-3xl shadow-[0_15px_40px_rgba(0,0,0,0.6)]">
-        <div className="flex items-center justify-between mb-3">
-          <p className="text-xs uppercase tracking-widest text-gray-300">
-            Background Music
-          </p>
-          <span className="text-[10px] text-purple-400">
-            Track {currentTrack + 1}/{PLAYLIST.length}
-          </span>
-        </div>
-
+      {/* 🎵 FLOATING MUSIC CONTROL */}
+      <div className="fixed bottom-6 right-6 z-50 bg-black/70 backdrop-blur-md px-5 py-4 rounded-2xl shadow-2xl">
+        <p className="text-xs text-gray-300 mb-2">🎵 Background Music</p>
         <div className="flex gap-3">
           <button
             onClick={toggleMusic}
-            className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${
-              isPlaying
-                ? 'bg-gradient-to-r from-red-500 to-pink-600 hover:scale-105'
-                : 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:scale-105'
-            }`}
+            className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-sm font-semibold"
           >
             {isPlaying ? 'Pause' : 'Play'}
           </button>
-
           <button
             onClick={nextTrack}
-            className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-pink-500 to-orange-500 hover:scale-105 transition-all duration-300"
+            className="bg-pink-600 hover:bg-pink-700 px-4 py-2 rounded-lg text-sm font-semibold"
           >
             Next
           </button>
@@ -176,6 +158,8 @@ export default function App() {
 
       {/* MAIN */}
       <main className="flex-1 px-6 md:px-12 py-10 space-y-16">
+
+        {/* HEADER */}
         <header className="max-w-4xl">
           <h1 className="text-4xl font-bold mb-3">
             🛑𝐕𝐂𝐅 𝐕𝐄𝐑𝐈𝐅𝐈𝐂𝐀𝐓𝐈𝐎𝐍 𝐒𝐘𝐒𝐓𝐄𝐌
@@ -184,6 +168,8 @@ export default function App() {
             🟢 Central control panel for verification progress, services, and community access
           </p>
         </header>
+
+        {/* ALL YOUR ORIGINAL CONTENT REMAINS EXACTLY THE SAME BELOW */}
 
         
 
