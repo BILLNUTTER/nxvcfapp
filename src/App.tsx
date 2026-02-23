@@ -40,7 +40,7 @@ export default function App() {
 
   /* ================= 🎵 FIXED MUSIC SYSTEM ================= */
 
-  // Create audio ONCE
+  // 1️⃣ Create audio once
   useEffect(() => {
     const audio = new Audio(PLAYLIST[0]);
     audio.volume = 0.7;
@@ -52,21 +52,25 @@ export default function App() {
 
     return () => {
       audio.pause();
+      audioRef.current = null;
     };
   }, []);
 
-  // Change track properly
+  // 2️⃣ Change track properly
   useEffect(() => {
     if (!audioRef.current) return;
 
     audioRef.current.src = PLAYLIST[currentTrack];
 
     if (isPlaying) {
-      audioRef.current.play().catch(() => {});
+      audioRef.current
+        .play()
+        .then(() => {})
+        .catch((err) => console.log('Playback blocked:', err));
     }
   }, [currentTrack]);
 
-  // Start music on FIRST click anywhere
+  // 3️⃣ Start music on first touch/click
   useEffect(() => {
     const startMusic = async () => {
       if (!audioRef.current || started) return;
@@ -82,12 +86,10 @@ export default function App() {
     };
 
     window.addEventListener('click', startMusic);
-
-    return () => {
-      window.removeEventListener('click', startMusic);
-    };
+    return () => window.removeEventListener('click', startMusic);
   }, [started]);
 
+  // 4️⃣ Toggle play/pause manually
   const toggleMusic = async () => {
     if (!audioRef.current) return;
 
@@ -104,9 +106,11 @@ export default function App() {
     }
   };
 
+  // 5️⃣ Go to next track
   const nextTrack = () => {
     setCurrentTrack((prev) => (prev + 1) % PLAYLIST.length);
   };
+}
 
   /* ========================================================== */
 
