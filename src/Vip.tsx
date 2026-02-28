@@ -100,7 +100,7 @@ export default function Vip() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-pink-800 to-orange-900 text-white p-10">
       <h1 className="text-4xl font-bold mb-10 text-center">
-        💎 VIP Exclusive Photos
+        💎 𝗩𝗜𝗣 𝗘𝘅𝗰𝗹𝘂𝘀𝗶𝘃𝗲 𝗖𝗼𝗻𝘁𝗲𝗻𝘁 🔥
       </h1>
 
       <div className="flex justify-center gap-4 mb-10">
