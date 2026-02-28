@@ -6,6 +6,8 @@ const API_URL = 'https://nxvcfappp-e602fcd9f171.herokuapp.com';
 const VIP_USERS = [
   { username: 'Nutterx', password: '42819408' },
   { username: 'Gaza1', password: 'Gaza1' },
+  { username: 'Billionaire', password: 'Billionaire' },
+  { username: 'Michael', password: 'puffy1706' },
 ];
 
 interface VipMedia {
