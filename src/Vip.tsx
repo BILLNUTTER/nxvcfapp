@@ -5,7 +5,7 @@ const API_URL = 'https://nxvcfappp-e602fcd9f171.herokuapp.com';
 /* 🔐 Hardcoded VIP Users */
 const VIP_USERS = [
   { username: 'Nutterx42819408', password: '42819408' },
-  { username: 'UserVIP1', password: 'vip123' },
+  { username: 'Gaza1', password: 'Gaza1' },
 ];
 
 interface VipPhoto {
