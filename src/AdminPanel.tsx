@@ -9,9 +9,13 @@ interface Contact {
     phone_number: string;
 }
 
-interface VipPhoto {
+type MediaType = "photo" | "video" | "audio";
+
+interface VipMedia {
   _id: string;
-  image_url: string;
+  file_url: string;
+  caption?: string;
+  type: MediaType;
   created_at: string;
 }
 
@@ -33,9 +37,10 @@ export default function AdminPanel() {
     const [editName, setEditName] = useState("");
     const [editPhone, setEditPhone] = useState("");
 
-    const [vipPhoto, setVipPhoto] = useState<File | null>(null);
+    const [vipFile, setVipFile] = useState<File | null>(null);
     const [vipCaption, setVipCaption] = useState("");
     const [sendingVipPhoto, setSendingVipPhoto] = useState(false);
+    const [vipMediaType, setVipMediaType] = useState<"photo" | "video" | "audio">("photo");
 
     // ✅ SEARCH STATE
     const [searchTerm, setSearchTerm] = useState("");
@@ -130,58 +135,55 @@ export default function AdminPanel() {
         }
     };
 
-    // ================= VIP PHOTO SEND =================
-const sendVipPhoto = async () => {
-    if (!vipPhoto) {
-        alert("❌ Please select a photo");
-        return;
+const sendVipMedia = async () => {
+  if (!vipFile) {
+    alert("❌ Please select a file");
+    return;
+  }
+
+  if (!inputKey) {
+    alert("❌ Admin session expired. Please login again.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("file", vipFile);
+  formData.append("caption", vipCaption);
+  formData.append("type", vipMediaType); // 👈 VERY IMPORTANT
+
+  setSendingVipPhoto(true);
+
+  try {
+    const res = await fetch(
+      `${API_URL}/api/admin/vip/send-media`,
+      {
+        method: "POST",
+        headers: {
+          "x-admin-key": inputKey,
+        },
+        body: formData,
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || "Failed to send VIP media");
     }
 
-    if (!inputKey) {
-        alert("❌ Admin session expired. Please login again.");
-        return;
-    }
+    alert(`✅ VIP ${vipMediaType} sent successfully`);
+    setVipFile(null);
+    setVipCaption("");
 
-    const formData = new FormData();
-    formData.append("image", vipPhoto);
-    formData.append("caption", vipCaption);
-
-    setSendingVipPhoto(true);
-
-    try {
-        const res = await fetch(
-            `${API_URL}/api/admin/vip/send-photo`,
-            {
-                method: "POST",
-                headers: {
-                    "x-admin-key": inputKey,
-                },
-                body: formData,
-            }
-        );
-
-        let data: any = {};
-        try {
-            data = await res.json();
-        } catch {
-            // backend may not return json
-        }
-
-        if (!res.ok) {
-            throw new Error(data?.error || "Failed to send VIP photo");
-        }
-
-        alert("✅ Photo sent to VIP users successfully");
-        setVipPhoto(null);
-        setVipCaption("");
-
-    } catch (err: any) {
-        console.error("VIP photo error:", err);
-        alert(`❌ ${err.message || "Photo send failed"}`);
-    } finally {
-        setSendingVipPhoto(false);
-    }
+  } catch (err: any) {
+    console.error("VIP media error:", err);
+    alert(`❌ ${err.message}`);
+  } finally {
+    setSendingVipPhoto(false);
+  }
 };
+    
+
     // ================= WHATSAPP =================
     const openWhatsApp = () => {
         if (!selectedPhone || !waMessage)
@@ -299,7 +301,7 @@ if (!authorized) {
                     </p>
                 )}
 
-                <button
+              <button
                     onClick={handleLogin}
                     className="w-full bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 
                                hover:scale-105 transform transition-all text-white py-3 rounded-xl font-bold shadow-lg"
@@ -363,46 +365,85 @@ if (!authorized) {
                 </button>
             </div>
 
-            {/* VIP PHOTO UPLOAD */}
+{/* VIP MEDIA UPLOAD */}
 <div className="bg-white text-gray-900 p-6 rounded-2xl shadow-lg mb-8">
-    <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-        💎 Send VIP Photo
-    </h2>
+  <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+    💎 Send VIP Media
+  </h2>
 
-    {/* FILE INPUT */}
-    <input
-        type="file"
-        accept="image/*"
-        onChange={(e) => setVipPhoto(e.target.files?.[0] || null)}
-        className="w-full border rounded-lg p-3 mb-3"
-    />
+  {/* MEDIA TYPE SELECT */}
+  <select
+    value={vipMediaType}
+    onChange={(e) => setVipMediaType(e.target.value as "photo" | "video" | "audio")}
+    className="w-full border rounded-lg p-3 mb-3"
+  >
+    <option value="photo">📸 Photo</option>
+    <option value="video">🎬 Video</option>
+    <option value="audio">🎵 Song / Audio</option>
+  </select>
 
-    {/* IMAGE PREVIEW */}
-    {vipPhoto && (
-        <img
-            src={URL.createObjectURL(vipPhoto)}
-            alt="VIP Preview"
-            className="w-full h-64 object-cover rounded-lg mb-3"
-        />
-    )}
+<input
+  type="file"
+  accept={
+    vipMediaType === "photo"
+      ? "image/*"
+      : vipMediaType === "video"
+      ? "video/*"
+      : "audio/*"
+  }
+  onChange={(e) => setVipFile(e.target.files?.[0] || null)}
+  className="w-full border rounded-lg p-3 mb-3"
+/>
 
-    {/* CAPTION */}
-    <textarea
-        value={vipCaption}
-        onChange={(e) => setVipCaption(e.target.value)}
-        placeholder="Optional caption for VIP users..."
-        className="w-full border rounded-lg p-3 mb-3"
-        rows={3}
-    />
+  {/* PREVIEW */}
+{vipFile && vipMediaType === "photo" && (
+  <img
+    src={URL.createObjectURL(vipFile)}
+    alt="VIP Preview"
+    className="w-full h-64 object-contain rounded-lg mb-3"
+  />
+)}
 
-    {/* SEND BUTTON */}
-    <button
-        onClick={sendVipPhoto}
-        disabled={sendingVipPhoto}
-        className="bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white px-6 py-2 rounded-lg"
-    >
-        {sendingVipPhoto ? "Sending..." : "Send VIP Photo"}
-    </button>
+{vipFile && vipMediaType === "video" && (
+  <video
+    controls
+    className="w-full h-64 rounded-lg mb-3"
+    src={URL.createObjectURL(vipFile)}
+  />
+)}
+
+{vipFile && vipMediaType === "audio" && (
+  <audio
+    controls
+    className="w-full rounded-lg mb-3"
+    src={URL.createObjectURL(vipFile)}
+  />
+)}
+
+  {/* CAPTION */}
+  <textarea
+    value={vipCaption}
+    onChange={(e) => setVipCaption(e.target.value)}
+    placeholder="Optional caption for VIP users..."
+    className="w-full border rounded-lg p-3 mb-3"
+    rows={3}
+  />
+
+  {/* SEND BUTTON */}
+  <button
+    onClick={sendVipMedia}
+    disabled={sendingVipPhoto}
+    className="bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white px-6 py-2 rounded-lg"
+  >
+    {sendingVipPhoto
+      ? "Sending..."
+      : `Send VIP ${vipMediaType === "photo"
+          ? "Photo"
+          : vipMediaType === "video"
+          ? "Video"
+          : "Audio"
+        }`}
+  </button>
 </div>
             {/* WHATSAPP */}
             <div className="bg-white text-gray-900 p-6 rounded-2xl shadow-lg mb-8">
