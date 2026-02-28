@@ -10,6 +10,7 @@ const VIP_USERS = [
 
 interface VipPhoto {
   image_url: string;
+  caption?: string;
   created_at: string;
 }
 
@@ -94,20 +95,45 @@ export default function Vip() {
           No VIP photos available yet.
         </p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {photos.map((photo, index) => (
             <div
               key={index}
               className="bg-black/40 backdrop-blur-md rounded-2xl p-4 shadow-lg"
             >
-              <img
-                src={photo.image_url}
-                alt="VIP"
-                className="rounded-lg mb-3 w-full h-64 object-cover"
-              />
-              <p className="text-xs text-gray-300">
+              {/* FULL IMAGE (NO CROPPING) */}
+              <a
+                href={photo.image_url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  src={photo.image_url}
+                  alt="VIP"
+                  className="rounded-lg mb-3 w-full h-auto object-contain cursor-zoom-in"
+                />
+              </a>
+
+              {/* CAPTION */}
+              {photo.caption && (
+                <p className="text-sm text-white mb-2">
+                  📝 {photo.caption}
+                </p>
+              )}
+
+              {/* DATE */}
+              <p className="text-xs text-gray-300 mb-3">
                 {new Date(photo.created_at).toLocaleString()}
               </p>
+
+              {/* DOWNLOAD BUTTON */}
+              <a
+                href={photo.image_url}
+                download
+                className="inline-block bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-2 rounded-lg transition"
+              >
+                ⬇ Download Image
+              </a>
             </div>
           ))}
         </div>
