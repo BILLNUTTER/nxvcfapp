@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BarChart3, Users, ArrowRight, MessageCircle } from 'lucide-react';
@@ -45,15 +44,13 @@ export default function App() {
     audioRef.current = audio;
 
     audio.onended = () => {
-      const next = (currentTrack + 1) % PLAYLIST.length;
-      setCurrentTrack(next);
+      setCurrentTrack((prev) => (prev + 1) % PLAYLIST.length);
     };
 
-    // Try autoplay
-    audio.play()
+    audio
+      .play()
       .then(() => setIsPlaying(true))
       .catch(() => {
-        // If blocked, wait for first click
         const startOnClick = () => {
           audio.play();
           setIsPlaying(true);
@@ -67,24 +64,7 @@ export default function App() {
     };
   }, [currentTrack]);
 
-  const toggleMusic = () => {
-    if (!audioRef.current) return;
-
-    if (isPlaying) {
-      audioRef.current.pause();
-      setIsPlaying(false);
-    } else {
-      audioRef.current.play();
-      setIsPlaying(true);
-    }
-  };
-
-  const nextTrack = () => {
-    const next = (currentTrack + 1) % PLAYLIST.length;
-    setCurrentTrack(next);
-  };
-  /* ================================================= */
-
+  /* ================= DATA FETCHING ================= */
   useEffect(() => {
     fetchContactCount();
     fetchAdminMessages();
@@ -102,7 +82,7 @@ export default function App() {
     try {
       const res = await fetch(`${API_URL}/api/contacts/count`);
       const data = await res.json();
-      setContactCount(data.count || 0);
+      setContactCount(data.count ?? 0);
     } catch (err) {
       console.error('Error fetching contact count:', err);
     }
@@ -112,7 +92,17 @@ export default function App() {
     try {
       const res = await fetch(`${API_URL}/api/broadcast/latest`);
       const data = await res.json();
-      setAdminMessages(data.message ? [data.message] : []);
+
+      if (data?.message?.message) {
+        setAdminMessages([
+          {
+            message: data.message.message,
+            created_at: data.message.created_at ?? new Date().toISOString(),
+          },
+        ]);
+      } else {
+        setAdminMessages([]);
+      }
     } catch (err) {
       console.error('Error fetching admin messages:', err);
     }
@@ -122,37 +112,52 @@ export default function App() {
     window.open(`${API_URL}/api/contacts/download`, '_blank');
   };
 
-const [position, setPosition] = useState<{ top: number; left: number }>({
-  top: window.innerHeight / 2 - 50,
-  left: window.innerWidth / 2,
-});
-const [dragging, setDragging] = useState(false);
+  /* ================= DRAG SYSTEM (FIXED) ================= */
+  const [position, setPosition] = useState<{ top: number; left: number }>({
+    top: window.innerHeight / 2 - 50,
+    left: window.innerWidth / 2,
+  });
 
-const startDrag = (e: MouseEvent | Touch) => {
-  e.preventDefault();
-  setDragging(true);
+  const startDrag = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
 
-  const startX = 'clientX' in e ? e.clientX : e.pageX;
-  const startY = 'clientY' in e ? e.clientY : e.pageY;
+    let lastX =
+      'touches' in e ? e.touches[0].clientX : e.clientX;
+    let lastY =
+      'touches' in e ? e.touches[0].clientY : e.clientY;
 
-  const handleMove = (moveEvent: MouseEvent | TouchEvent) => {
-    const clientX = 'touches' in moveEvent ? moveEvent.touches[0].clientX : moveEvent.clientX;
-    const clientY = 'touches' in moveEvent ? moveEvent.touches[0].clientY : moveEvent.clientY;
+    const handleMove = (moveEvent: MouseEvent | TouchEvent) => {
+      const clientX =
+        'touches' in moveEvent
+          ? moveEvent.touches[0].clientX
+          : moveEvent.clientX;
+      const clientY =
+        'touches' in moveEvent
+          ? moveEvent.touches[0].clientY
+          : moveEvent.clientY;
 
-    setPosition((prev) => ({
-      top: prev.top + (clientY - startY),
-      left: prev.left + (clientX - startX),
-    }));
+      setPosition((prev) => ({
+        top: prev.top + (clientY - lastY),
+        left: prev.left + (clientX - lastX),
+      }));
+
+      lastX = clientX;
+      lastY = clientY;
+    };
+
+    const handleUp = () => {
+      window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('touchmove', handleMove);
+      window.removeEventListener('mouseup', handleUp);
+      window.removeEventListener('touchend', handleUp);
+    };
+
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('touchmove', handleMove);
+    window.addEventListener('mouseup', handleUp);
+    window.addEventListener('touchend', handleUp);
   };
 
-  const handleUp = () => setDragging(false);
-
-  window.addEventListener('mousemove', handleMove);
-  window.addEventListener('mouseup', handleUp, { once: true });
-  window.addEventListener('touchmove', handleMove);
-  window.addEventListener('touchend', handleUp, { once: true });
-};
-  
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-purple-900 via-pink-800 to-orange-900 text-white">
       
