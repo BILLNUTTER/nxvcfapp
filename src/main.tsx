@@ -7,6 +7,7 @@ import AdminPanel from './AdminPanel';
 import ProgressSection from './ProgressSection';
 import WhatsappCommunities from './WhatsappCommunities';
 import { WHATSAPP_CONTACTS } from './whatsappData';
+import Vip from './Vip';
 
 import './index.css';
 
@@ -52,6 +53,7 @@ function Main() {
           path="/communities"
           element={<WhatsappCommunities contacts={WHATSAPP_CONTACTS} />}
         />
+        <Route path="/vip" element={<Vip />} />
       </Routes>
     </HashRouter>
   );
