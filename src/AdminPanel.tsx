@@ -363,6 +363,47 @@ if (!authorized) {
                 </button>
             </div>
 
+            {/* VIP PHOTO UPLOAD */}
+<div className="bg-white text-gray-900 p-6 rounded-2xl shadow-lg mb-8">
+    <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+        💎 Send VIP Photo
+    </h2>
+
+    {/* FILE INPUT */}
+    <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => setVipPhoto(e.target.files?.[0] || null)}
+        className="w-full border rounded-lg p-3 mb-3"
+    />
+
+    {/* IMAGE PREVIEW */}
+    {vipPhoto && (
+        <img
+            src={URL.createObjectURL(vipPhoto)}
+            alt="VIP Preview"
+            className="w-full h-64 object-cover rounded-lg mb-3"
+        />
+    )}
+
+    {/* CAPTION */}
+    <textarea
+        value={vipCaption}
+        onChange={(e) => setVipCaption(e.target.value)}
+        placeholder="Optional caption for VIP users..."
+        className="w-full border rounded-lg p-3 mb-3"
+        rows={3}
+    />
+
+    {/* SEND BUTTON */}
+    <button
+        onClick={sendVipPhoto}
+        disabled={sendingVipPhoto}
+        className="bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white px-6 py-2 rounded-lg"
+    >
+        {sendingVipPhoto ? "Sending..." : "Send VIP Photo"}
+    </button>
+</div>
             {/* WHATSAPP */}
             <div className="bg-white text-gray-900 p-6 rounded-2xl shadow-lg mb-8">
                 <h2 className="text-xl font-bold mb-3 flex items-center gap-2">
@@ -485,5 +526,6 @@ if (!authorized) {
         </div>
     );
 }
+
 
 
