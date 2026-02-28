@@ -1,0 +1,118 @@
+import { useState, useEffect } from 'react';
+
+const API_URL = 'https://nxvcfappp-e602fcd9f171.herokuapp.com';
+
+/* 🔐 Hardcoded VIP Users */
+const VIP_USERS = [
+  { username: 'Nutterx42819408', password: '42819408' },
+  { username: 'AdminVIP', password: 'vip12345' },
+];
+
+interface VipPhoto {
+  image_url: string;
+  created_at: string;
+}
+
+export default function VIP() {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [error, setError] = useState('');
+  const [photos, setPhotos] = useState<VipPhoto[]>([]);
+
+  const handleLogin = () => {
+    const user = VIP_USERS.find(
+      (u) => u.username === username && u.password === password
+    );
+
+    if (user) {
+      setIsLoggedIn(true);
+      setError('');
+      fetchVipPhotos();
+    } else {
+      setError('Invalid username or password');
+    }
+  };
+
+  const fetchVipPhotos = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/vip/photos`);
+      const data = await res.json();
+      setPhotos(data.photos || []);
+    } catch (err) {
+      console.error('Error fetching VIP photos:', err);
+    }
+  };
+
+  /* ================= LOGIN SCREEN ================= */
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-pink-800 to-orange-900 text-white">
+        <div className="bg-black/40 backdrop-blur-md p-10 rounded-2xl w-96 shadow-xl">
+          <h2 className="text-3xl font-bold mb-6 text-center">🔐 VIP Access</h2>
+
+          <input
+            type="text"
+            placeholder="Username"
+            className="w-full mb-4 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-300"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+
+          <input
+            type="password"
+            placeholder="Password"
+            className="w-full mb-4 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-300"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          {error && (
+            <p className="text-red-400 text-sm mb-3 text-center">{error}</p>
+          )}
+
+          <button
+            onClick={handleLogin}
+            className="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-lg font-semibold transition"
+          >
+            LOGIN
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  /* ================= VIP PHOTO PAGE ================= */
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-pink-800 to-orange-900 text-white p-10">
+      
+      <h1 className="text-4xl font-bold mb-8 text-center">
+        💎 VIP Exclusive Photos
+      </h1>
+
+      {photos.length === 0 ? (
+        <p className="text-center text-gray-300">
+          No VIP photos available yet.
+        </p>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {photos.map((photo, index) => (
+            <div
+              key={index}
+              className="bg-black/40 backdrop-blur-md rounded-2xl p-4 shadow-lg"
+            >
+              <img
+                src={photo.image_url}
+                alt="VIP"
+                className="rounded-lg mb-3 w-full h-64 object-cover"
+              />
+              <p className="text-xs text-gray-300">
+                {new Date(photo.created_at).toLocaleString()}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
