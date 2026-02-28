@@ -8,9 +8,10 @@ const VIP_USERS = [
   { username: 'Gaza1', password: 'Gaza1' },
 ];
 
-interface VipPhoto {
-  image_url: string;
+interface VipMedia {
+  file_url: string;
   caption?: string;
+  type: 'photo' | 'video' | 'audio';
   created_at: string;
 }
 
@@ -19,7 +20,8 @@ export default function Vip() {
   const [password, setPassword] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [error, setError] = useState('');
-  const [photos, setPhotos] = useState<VipPhoto[]>([]);
+  const [media, setMedia] = useState<VipMedia[]>([]);
+  const [activeTab, setActiveTab] = useState<'photo' | 'video' | 'audio'>('photo');
 
   const handleLogin = () => {
     const user = VIP_USERS.find(
@@ -36,14 +38,23 @@ export default function Vip() {
   };
 
   const fetchPhotos = async () => {
-    try {
-      const res = await fetch(`${API_URL}/api/vip/photos`);
-      const data = await res.json();
-      setPhotos(data.photos || []);
-    } catch (err) {
-      console.error('Failed to fetch VIP photos', err);
-    }
-  };
+  try {
+    const res = await fetch(`${API_URL}/api/vip/photos`);
+    const data = await res.json();
+
+    // SAFETY: convert old photo format to new media format
+    const mapped = (data.photos || []).map((p: any) => ({
+      file_url: p.image_url,
+      caption: p.caption,
+      created_at: p.created_at,
+      type: 'photo', // default for now
+    }));
+
+    setMedia(mapped);
+  } catch (err) {
+    console.error('Failed to fetch VIP media', err);
+  }
+};
 
   /* ================= LOGIN SCREEN ================= */
   if (!isLoggedIn) {
@@ -83,6 +94,8 @@ export default function Vip() {
     );
   }
 
+    const filteredMedia = media.filter((m) => m.type === activeTab);
+
   /* ================= VIP PAGE ================= */
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-pink-800 to-orange-900 text-white p-10">
@@ -90,53 +103,93 @@ export default function Vip() {
         💎 VIP Exclusive Photos
       </h1>
 
-      {photos.length === 0 ? (
+      <div className="flex justify-center gap-4 mb-10">
+  <button
+    onClick={() => setActiveTab('photo')}
+    className={`px-6 py-2 rounded-full font-semibold ${
+      activeTab === 'photo'
+        ? 'bg-blue-600'
+        : 'bg-white/10 hover:bg-white/20'
+    }`}
+  >
+    📸 Photos
+  </button>
+
+  <button
+    onClick={() => setActiveTab('video')}
+    className={`px-6 py-2 rounded-full font-semibold ${
+      activeTab === 'video'
+        ? 'bg-blue-600'
+        : 'bg-white/10 hover:bg-white/20'
+    }`}
+  >
+    🎥 Videos
+  </button>
+
+  <button
+    onClick={() => setActiveTab('audio')}
+    className={`px-6 py-2 rounded-full font-semibold ${
+      activeTab === 'audio'
+        ? 'bg-blue-600'
+        : 'bg-white/10 hover:bg-white/20'
+    }`}
+  >
+    🎵 Songs
+  </button>
+</div>
+      {filteredMedia.length === 0 ? (
         <p className="text-center text-gray-300">
           No VIP photos available yet.
         </p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {photos.map((photo, index) => (
-            <div
-              key={index}
-              className="bg-black/40 backdrop-blur-md rounded-2xl p-4 shadow-lg"
-            >
-              {/* FULL IMAGE (NO CROPPING) */}
-              <a
-                href={photo.image_url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <img
-                  src={photo.image_url}
-                  alt="VIP"
-                  className="rounded-lg mb-3 w-full h-auto object-contain cursor-zoom-in"
-                />
-              </a>
+  {filteredMedia.map((item, index) => (
+    <div
+      key={index}
+      className="bg-black/40 backdrop-blur-md rounded-2xl p-4 shadow-lg"
+    >
+      {/* PHOTO */}
+      {item.type === 'photo' && (
+        <a href={item.file_url} target="_blank" rel="noopener noreferrer">
+          <img
+            src={item.file_url}
+            className="rounded-lg mb-3 w-full h-auto object-contain"
+          />
+        </a>
+      )}
 
-              {/* CAPTION */}
-              {photo.caption && (
-                <p className="text-sm text-white mb-2">
-                  📝 {photo.caption}
-                </p>
-              )}
+      {/* VIDEO */}
+      {item.type === 'video' && (
+        <video controls className="rounded-lg w-full mb-3">
+          <source src={item.file_url} />
+        </video>
+      )}
 
-              {/* DATE */}
-              <p className="text-xs text-gray-300 mb-3">
-                {new Date(photo.created_at).toLocaleString()}
-              </p>
+      {/* AUDIO */}
+      {item.type === 'audio' && (
+        <audio controls className="w-full mb-3">
+          <source src={item.file_url} />
+        </audio>
+      )}
 
-              {/* DOWNLOAD BUTTON */}
-              <a
-                href={photo.image_url}
-                download
-                className="inline-block bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-2 rounded-lg transition"
-              >
-                ⬇ Download Image
-              </a>
-            </div>
-          ))}
-        </div>
+      {item.caption && (
+        <p className="text-sm text-white mb-2">📝 {item.caption}</p>
+      )}
+
+      <p className="text-xs text-gray-300 mb-3">
+        {new Date(item.created_at).toLocaleString()}
+      </p>
+
+      <a
+        href={item.file_url}
+        download
+        className="inline-block bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-2 rounded-lg"
+      >
+        ⬇ Download
+      </a>
+    </div>
+  ))}
+</div>
       )}
     </div>
   );
