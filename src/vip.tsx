@@ -5,7 +5,7 @@ const API_URL = 'https://nxvcfappp-e602fcd9f171.herokuapp.com';
 /* 🔐 Hardcoded VIP Users */
 const VIP_USERS = [
   { username: 'Nutterx42819408', password: '42819408' },
-  { username: 'AdminVIP', password: 'vip12345' },
+  { username: 'UserVIP1', password: 'vip123' },
 ];
 
 interface VipPhoto {
@@ -13,7 +13,7 @@ interface VipPhoto {
   created_at: string;
 }
 
-export default function VIP() {
+export default function Vip() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -28,19 +28,19 @@ export default function VIP() {
     if (user) {
       setIsLoggedIn(true);
       setError('');
-      fetchVipPhotos();
+      fetchPhotos();
     } else {
       setError('Invalid username or password');
     }
   };
 
-  const fetchVipPhotos = async () => {
+  const fetchPhotos = async () => {
     try {
       const res = await fetch(`${API_URL}/api/vip/photos`);
       const data = await res.json();
       setPhotos(data.photos || []);
     } catch (err) {
-      console.error('Error fetching VIP photos:', err);
+      console.error('Failed to fetch VIP photos', err);
     }
   };
 
@@ -54,7 +54,7 @@ export default function VIP() {
           <input
             type="text"
             placeholder="Username"
-            className="w-full mb-4 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-300"
+            className="w-full mb-4 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
@@ -62,7 +62,7 @@ export default function VIP() {
           <input
             type="password"
             placeholder="Password"
-            className="w-full mb-4 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-300"
+            className="w-full mb-4 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
@@ -82,11 +82,10 @@ export default function VIP() {
     );
   }
 
-  /* ================= VIP PHOTO PAGE ================= */
+  /* ================= VIP PAGE ================= */
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-pink-800 to-orange-900 text-white p-10">
-      
-      <h1 className="text-4xl font-bold mb-8 text-center">
+      <h1 className="text-4xl font-bold mb-10 text-center">
         💎 VIP Exclusive Photos
       </h1>
 
