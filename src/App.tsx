@@ -193,64 +193,65 @@ export default function App() {
         {/* MAIN DASHBOARD CARDS */}
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-          {/* Verification Card */}
-          <div className="bg-white text-gray-900 rounded-2xl p-8 shadow-xl flex flex-col justify-between">
-            <div>
-              <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                <BarChart3 /> Verification Progress
-              </h2>
+ {/* Verification Card */}
+<div className="bg-white text-gray-900 rounded-2xl p-8 shadow-xl flex flex-col justify-between">
+  <div>
+    <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+      <BarChart3 /> Verification Progress
+    </h2>
 
-              <div className="w-full bg-gray-300 rounded-full h-5 mb-4">
-                <div
-                  className="bg-green-500 h-5 rounded-full transition-all duration-500"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
+    <div className="w-full bg-gray-300 rounded-full h-5 mb-4">
+      <div
+        className="bg-green-500 h-5 rounded-full transition-all duration-500"
+        style={{ width: `${progress}%` }}
+      />
+    </div>
 
-              <p className="text-sm text-gray-700 mb-3">
-                {contactCount} / {TARGET_COUNT} contacts ({progress.toFixed(1)}%)
-              </p>
+    <p className="text-sm text-gray-700 mb-3">
+      {contactCount} / {TARGET_COUNT} contacts ({progress.toFixed(1)}%)
+    </p>
 
-              <div className="bg-gray-100 rounded-lg p-4 mb-4 text-sm text-gray-700 space-y-2">
-                <p>
-                  📈 This system helps increase your WhatsApp status viewers by expanding
-                  your verified contact network.
-                </p>
-                <p>
-                  🔥 More viewers means more visibility — helping you grow your business,
-                  brand, or personal influence.
-                </p>
-                <p>
-                  🌍 Connect with people across different countries and build a strong
-                  international network through verified contacts.
-                </p>
-              </div>
-            </div>
+    <div className="bg-gray-100 rounded-lg p-4 mb-4 text-sm text-gray-700 space-y-2">
+      <p>
+        📈 This system helps increase your WhatsApp status viewers by expanding
+        your verified contact network.
+      </p>
+      <p>
+        🔥 More viewers means more visibility — helping you grow your business,
+        brand, or personal influence.
+      </p>
+      <p>
+        🌍 Connect with people across different countries and build a strong
+        international network through verified contacts.
+      </p>
+    </div>
+  </div>
 
-{!isComplete ? (
-  <button
-    onClick={() => goTo('/progress')}
-    className="flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white w-full"
-  >
-    ⚪ GET VERIFIED <ArrowRight size={18} />
-  </button>
-) : (
-  <button
-    onClick={handleDownload}
-    className="flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-green-600 hover:bg-green-700 text-white w-full"
-  >
-    ⬇ DOWNLOAD VCF FILE <ArrowRight size={18} />
-  </button>
-)}
+  {!isComplete ? (
+    <button
+      onClick={() => goTo('/progress')}
+      className="flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white w-full"
+    >
+      ⚪ GET VERIFIED <ArrowRight size={18} />
+    </button>
+  ) : (
+    <button
+      onClick={handleDownload}
+      className="flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-green-600 hover:bg-green-700 text-white w-full"
+    >
+      ⬇ DOWNLOAD VCF FILE <ArrowRight size={18} />
+    </button>
+  )}
 
-{/* VIP Access Link */}
-<div className="mt-4 text-center">
-  <button
-    onClick={() => goTo('/vip')}
-    className="text-sm text-purple-700 hover:text-purple-900 font-semibold underline transition"
-  >
-    💎 Are you a VIP user? Tap here to log in
-  </button>
+  {/* VIP Access Link */}
+  <div className="mt-4 text-center">
+    <button
+      onClick={() => goTo('/vip')}
+      className="text-sm text-purple-700 hover:text-purple-900 font-semibold underline transition"
+    >
+      💎 Are you a VIP user? Tap here to log in
+    </button>
+  </div>
 </div>
 
           {/* VCF Group Card */}
