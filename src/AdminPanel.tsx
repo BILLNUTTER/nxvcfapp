@@ -9,6 +9,12 @@ interface Contact {
     phone_number: string;
 }
 
+interface VipPhoto {
+  _id: string;
+  image_url: string;
+  created_at: string;
+}
+
 export default function AdminPanel() {
     const [authorized, setAuthorized] = useState(false);
     const [inputKey, setInputKey] = useState("");
@@ -26,6 +32,10 @@ export default function AdminPanel() {
     const [editingUser, setEditingUser] = useState<Contact | null>(null);
     const [editName, setEditName] = useState("");
     const [editPhone, setEditPhone] = useState("");
+
+    const [vipPhoto, setVipPhoto] = useState<File | null>(null);
+    const [vipCaption, setVipCaption] = useState("");
+    const [sendingVipPhoto, setSendingVipPhoto] = useState(false);
 
     // ✅ SEARCH STATE
     const [searchTerm, setSearchTerm] = useState("");
@@ -120,6 +130,58 @@ export default function AdminPanel() {
         }
     };
 
+    // ================= VIP PHOTO SEND =================
+const sendVipPhoto = async () => {
+    if (!vipPhoto) {
+        alert("❌ Please select a photo");
+        return;
+    }
+
+    if (!inputKey) {
+        alert("❌ Admin session expired. Please login again.");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("image", vipPhoto);
+    formData.append("caption", vipCaption);
+
+    setSendingVipPhoto(true);
+
+    try {
+        const res = await fetch(
+            `${API_URL}/api/admin/vip/send-photo`,
+            {
+                method: "POST",
+                headers: {
+                    "x-admin-key": inputKey,
+                },
+                body: formData,
+            }
+        );
+
+        let data: any = {};
+        try {
+            data = await res.json();
+        } catch {
+            // backend may not return json
+        }
+
+        if (!res.ok) {
+            throw new Error(data?.error || "Failed to send VIP photo");
+        }
+
+        alert("✅ Photo sent to VIP users successfully");
+        setVipPhoto(null);
+        setVipCaption("");
+
+    } catch (err: any) {
+        console.error("VIP photo error:", err);
+        alert(`❌ ${err.message || "Photo send failed"}`);
+    } finally {
+        setSendingVipPhoto(false);
+    }
+};
     // ================= WHATSAPP =================
     const openWhatsApp = () => {
         if (!selectedPhone || !waMessage)
@@ -423,4 +485,5 @@ if (!authorized) {
         </div>
     );
 }
+
 
