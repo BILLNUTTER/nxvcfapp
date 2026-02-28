@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const API_URL = 'https://nxvcfappp-e602fcd9f171.herokuapp.com';
 
@@ -24,6 +24,9 @@ export default function Vip() {
   const [activeTab, setActiveTab] =
     useState<'photo' | 'video' | 'audio'>('photo');
   const [loading, setLoading] = useState(false);
+  const [showExplore, setShowExplore] = useState(false);
+
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   /* ================= LOGIN ================= */
   const handleLogin = () => {
@@ -38,17 +41,14 @@ export default function Vip() {
 
     setIsLoggedIn(true);
     setError('');
-    fetchMedia();
   };
 
   /* ================= FETCH VIP MEDIA ================= */
   const fetchMedia = async () => {
     try {
       setLoading(true);
-
       const res = await fetch(`${API_URL}/api/vip/photos`);
       const data = await res.json();
-
       setMedia(data.photos || []);
     } catch (err) {
       console.error('Failed to fetch VIP media', err);
@@ -56,6 +56,27 @@ export default function Vip() {
       setLoading(false);
     }
   };
+
+  /* Fetch once after login */
+  useEffect(() => {
+    if (isLoggedIn) fetchMedia();
+  }, [isLoggedIn]);
+
+  /* Close dropdown on outside click */
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
+        setShowExplore(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const filteredMedia = media.filter((m) => m.type === activeTab);
 
   /* ================= LOGIN SCREEN ================= */
   if (!isLoggedIn) {
@@ -95,23 +116,21 @@ export default function Vip() {
     );
   }
 
-  const filteredMedia = media.filter((m) => m.type === activeTab);
-
   /* ================= VIP PAGE ================= */
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-pink-800 to-orange-900 text-white p-10">
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-pink-800 to-orange-900 text-white p-6 md:p-10">
       <h1 className="text-4xl font-bold mb-10 text-center">
         💎 VIP Exclusive Content 🔥
       </h1>
 
-      {/* TABS */}
-      <div className="flex justify-center gap-4 mb-10">
+      {/* TABS + EXPLORE */}
+      <div className="flex flex-wrap justify-center items-center gap-4 mb-12">
         {(['photo', 'video', 'audio'] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
             disabled={loading}
-            className={`px-6 py-2 rounded-full font-semibold ${
+            className={`px-6 py-2 rounded-full font-semibold transition ${
               activeTab === tab
                 ? 'bg-blue-600'
                 : 'bg-white/10 hover:bg-white/20'
@@ -122,15 +141,39 @@ export default function Vip() {
             {tab === 'audio' && '🎵 Songs'}
           </button>
         ))}
+
+        {/* EXPLORE DROPDOWN */}
+        <div className="relative" ref={dropdownRef}>
+          <button
+            onClick={() => setShowExplore((s) => !s)}
+            className="px-6 py-2 rounded-full bg-gradient-to-r from-pink-600 to-purple-600 font-semibold hover:opacity-90 transition"
+          >
+            🌐 Explore ▾
+          </button>
+
+          {showExplore && (
+            <div className="absolute right-0 mt-2 w-48 bg-black/80 backdrop-blur-md rounded-xl shadow-xl overflow-hidden z-50">
+              <a
+                href="https://whatsapp.com/channel/0029Vb7CXGEGJP8CNatzUh0Y"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block px-4 py-3 hover:bg-white/10 transition"
+              >
+                😂 MEMES
+              </a>
+
+              {/* You can add more channels here later */}
+              {/* <a href="..." className="block px-4 py-3">🔥 Clips</a> */}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* LOADING */}
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-20">
-          <div className="w-64 h-2 bg-white/20 rounded-full overflow-hidden">
-            <div className="h-full bg-blue-500 animate-loading-bar" />
-          </div>
-          <p className="mt-4 text-sm text-gray-300">
+        <div className="flex flex-col items-center justify-center py-24">
+          <div className="vip-loader" />
+          <p className="mt-5 text-sm text-gray-300">
             Loading VIP {activeTab}s...
           </p>
         </div>
@@ -145,6 +188,7 @@ export default function Vip() {
               key={index}
               className="bg-black/40 backdrop-blur-md rounded-2xl p-4 shadow-lg"
             >
+              {/* PHOTO */}
               {item.type === 'photo' && (
                 <img
                   src={item.file_url}
@@ -152,12 +196,14 @@ export default function Vip() {
                 />
               )}
 
+              {/* VIDEO */}
               {item.type === 'video' && (
                 <video controls className="rounded-lg w-full mb-3">
                   <source src={item.file_url} />
                 </video>
               )}
 
+              {/* AUDIO */}
               {item.type === 'audio' && (
                 <audio controls className="w-full mb-3">
                   <source src={item.file_url} />
@@ -168,9 +214,18 @@ export default function Vip() {
                 <p className="text-sm text-white mb-2">📝 {item.caption}</p>
               )}
 
-              <p className="text-xs text-gray-300">
+              <p className="text-xs text-gray-300 mb-4">
                 {new Date(item.created_at).toLocaleString()}
               </p>
+
+              {/* DOWNLOAD */}
+              <a
+                href={item.file_url}
+                download
+                className="inline-block bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-2 rounded-lg transition"
+              >
+                ⬇ Download
+              </a>
             </div>
           ))}
         </div>
