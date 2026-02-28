@@ -222,22 +222,31 @@ const startDrag = (e: MouseEvent | Touch) => {
               </div>
             </div>
 
-            {!isComplete ? (
-              <button
-                onClick={() => goTo('/progress')}
-                className="flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white w-full"
-              >
-                ⚪ GET VERIFIED <ArrowRight size={18} />
-              </button>
-            ) : (
-              <button
-                onClick={handleDownload}
-                className="flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-green-600 hover:bg-green-700 text-white w-full"
-              >
-                ⬇ DOWNLOAD VCF FILE <ArrowRight size={18} />
-              </button>
-            )}
-          </div>
+{!isComplete ? (
+  <button
+    onClick={() => goTo('/progress')}
+    className="flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white w-full"
+  >
+    ⚪ GET VERIFIED <ArrowRight size={18} />
+  </button>
+) : (
+  <button
+    onClick={handleDownload}
+    className="flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-green-600 hover:bg-green-700 text-white w-full"
+  >
+    ⬇ DOWNLOAD VCF FILE <ArrowRight size={18} />
+  </button>
+)}
+
+{/* VIP Access Link */}
+<div className="mt-4 text-center">
+  <button
+    onClick={() => goTo('/vip')}
+    className="text-sm text-purple-700 hover:text-purple-900 font-semibold underline transition"
+  >
+    💎 Are you a VIP user? Tap here to log in
+  </button>
+</div>
 
           {/* VCF Group Card */}
 <div className="bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl p-8 hover:bg-black/50 transition flex flex-col justify-between">
