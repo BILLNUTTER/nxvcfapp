@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 const API_URL = 'https://nxvcfappp-e602fcd9f171.herokuapp.com';
 
