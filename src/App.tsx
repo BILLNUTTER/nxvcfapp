@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { BarChart3, Users, ArrowRight, MessageCircle } from 'lucide-react';
 
 const API_URL = 'https://nxvcfappp-e602fcd9f171.herokuapp.com';
-const TARGET_COUNT = 300;
+const TARGET_COUNT = 284;
 
 /* 🎵 MUSIC PLAYLIST */
 const PLAYLIST = [
@@ -155,47 +155,6 @@ const startDrag = (e: MouseEvent | Touch) => {
   
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-purple-900 via-pink-800 to-orange-900 text-white">
-      
-{/* 🎵 FLOATING MUSIC CONTROL (Centered & Draggable) */}
-<div
-  className="fixed z-50 bg-black/70 backdrop-blur-md px-5 py-4 rounded-2xl shadow-2xl flex flex-col items-start cursor-move select-none"
-  style={{
-    top: position.top,
-    left: position.left,
-    transform: 'translate(-50%, -50%)', // keeps it centered at the pointer
-  }}
-  onMouseDown={(e) => startDrag(e)}
-  onTouchStart={(e) => startDrag(e.touches[0])}
->
-  <p className="text-xs text-gray-300 mb-2">🎵 Background Music</p>
-  
-  <div className="flex gap-3">
-    <button
-      onClick={toggleMusic}
-      className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors duration-200 ${
-        isPlaying ? 'bg-red-500 hover:bg-red-600' : 'bg-purple-600 hover:bg-purple-700'
-      }`}
-    >
-      {isPlaying ? 'Pause' : 'Play'}
-    </button>
-    
-    <button
-      onClick={nextTrack}
-      className="bg-pink-600 hover:bg-pink-700 px-4 py-2 rounded-lg text-sm font-semibold transition-colors duration-200"
-    >
-      Next
-    </button>
-  </div>
-
-  <span className="text-[10px] text-gray-400 mt-2">
-    Track {currentTrack + 1} / {PLAYLIST.length}
-  </span>
-</div>
-
-
-
-
-
       
 
       {/* SIDEBAR */}
