@@ -181,7 +181,7 @@ export default function App() {
         {/* HEADER */}
         <header className="max-w-4xl">
           <h1 className="text-4xl font-bold mb-3">
-            🛑𝐕𝐂𝐅 𝐕𝐄𝐑𝐈𝐅𝐈𝐂𝐀𝐓𝐈𝐎𝐍 𝐒𝐘𝐒𝐓𝐄𝐌
+            🛑𝐍𝐔𝐓𝐓𝐄𝐑𝐗 𝐕𝐂𝐅 𝐕𝐄𝐑𝐈𝐅𝐈𝐂𝐀𝐓𝐈𝐎𝐍 𝐒𝐘𝐒𝐓𝐄𝐌
           </h1>
           <p className="text-gray-200 text-lg">
             🟢 Central control panel for verification progress, services, and community access
