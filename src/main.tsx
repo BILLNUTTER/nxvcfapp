@@ -11,7 +11,7 @@ import Vip from './Vip';
 
 import './index.css';
 
-const TARGET_COUNT = 300;
+const TARGET_COUNT = 400;
 const API_URL = 'https://nxvcfappp-e602fcd9f171.herokuapp.com';
 
 function Main() {
