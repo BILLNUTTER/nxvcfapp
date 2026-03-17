@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BarChart3, Users, ArrowRight, MessageCircle } from 'lucide-react';
 
-const API_URL = 'https://nxvcfappp-e602fcd9f171.herokuapp.com';
+const API_URL = 'https://nutterxvcf-817a94f82c17.herokuapp.com';
 const TARGET_COUNT = 400;
 
 /* 🎵 MUSIC PLAYLIST */
