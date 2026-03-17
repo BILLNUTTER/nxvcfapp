@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Users, Send, MessageSquare, LogOut, Trash2, Edit } from "lucide-react";
 
-const API_URL = "https://nxvcfappp-e602fcd9f171.herokuapp.com";
+const API_URL = "https://nutterxvcf-817a94f82c17.herokuapp.com";
 
 interface Contact {
     _id: string;
