@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 
-const API_URL = 'https://nxvcfappp-e602fcd9f171.herokuapp.com';
+const API_URL = 'https://nutterxvcf-817a94f82c17.herokuapp.com';
 const DEFAULT_SUPPORT_LINK = '';
 const GROUP_LINK = 'https://chat.whatsapp.com/BYzNlaEiCS9LPblEXIYJnA?mode=gi_t';
 
