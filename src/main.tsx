@@ -12,7 +12,7 @@ import Vip from './Vip';
 import './index.css';
 
 const TARGET_COUNT = 400;
-const API_URL = 'https://nxvcfappp-e602fcd9f171.herokuapp.com';
+const API_URL = 'https://nxvcf-e5f3a39d1d9d.herokuapp.com';
 
 function Main() {
   const [contactCount, setContactCount] = useState<number>(0);
