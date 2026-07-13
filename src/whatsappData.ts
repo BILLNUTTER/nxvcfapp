@@ -46,7 +46,7 @@ export const WHATSAPP_CONTACTS: WhatsappContact[] = [
   {
     name: 'Contact Nutterx',
     type: 'Direct',
-    link: 'https://wa.me/25475881613',
+    link: 'https://wa.me/254713881613',
     dp: '/images/nxadmin.jpg',
     description: 'Direct support & enquiries.Bot Deployment DM'
   }
