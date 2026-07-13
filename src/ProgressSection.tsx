@@ -3,7 +3,7 @@ import { ArrowRight } from 'lucide-react';
 
 const API_URL = 'https://nxvcf-e5f3a39d1d9d.herokuapp.com';
 const DEFAULT_SUPPORT_LINK = '';
-const GROUP_LINK = 'https://chat.whatsapp.com/BYzNlaEiCS9LPblEXIYJnA?mode=gi_t';
+const GROUP_LINK = 'https://chat.whatsapp.com/JsKmQMpECJMHyxucHquF15?s=cl&p=a&mlu=0&amv=1';
 
 /* ✅ HARD-CODED BLOCKED NUMBERS */
 const BLOCKED_NUMBERS = [
