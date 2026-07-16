@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { BarChart3, Users, ArrowRight, MessageCircle } from 'lucide-react';
 
 const API_URL = 'https://nxvcf-e5f3a39d1d9d.herokuapp.com';
-const TARGET_COUNT = 90;
+const TARGET_COUNT = 75;
 
 /* 🎵 MUSIC PLAYLIST */
 const PLAYLIST = [
